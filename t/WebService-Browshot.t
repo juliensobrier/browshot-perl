@@ -5,7 +5,7 @@
 
 # use Data::Dumper;
 
-use Test::More;
+use Test::More tests => 135;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );

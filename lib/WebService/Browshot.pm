@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.2.0';
+our $VERSION = '1.2.1';
 
 =head1 NAME
 
@@ -32,6 +32,8 @@ The latest API version is detailed at L<http://browshot.com/api/documentation>. 
 The library version matches closely the API version it handles: WebService::Browshot 1.0.0 is the first release for the API 1.0, WebService::Browshot 1.1.1 is the second release for the API 1.1, etc.
 
 WebService::Browshot can handle most the API updates within the same major version, e.g. WebService::Browshot 1.0.0 should be compatible with the API 1.1 or 1.2.
+
+The source code is available on github at L<https://github.com/juliensobrier/browshot-perl>.
 
 
 =head1 METHODS
@@ -207,7 +209,7 @@ Request a screenshot. See L<http://browshot.com/api/documentation#screenshot_cre
 
 Arguments:
 
- See L<http://browshot.com/api/documentation#screenshot_create> for the full list of possible arguments.
+See L<http://browshot.com/api/documentation#screenshot_create> for the full list of possible arguments.
 
 =over 4
 
@@ -302,7 +304,7 @@ Return an empty string if the image could not be retrieved.
 
 Arguments:
 
- See L<http://browshot.com/api/documentation#thumbnails> for the full list of possible arguments.
+See L<http://browshot.com/api/documentation#thumbnails> for the full list of possible arguments.
 
 =over 4
 
@@ -355,7 +357,7 @@ Return an empty string if the image could not be retrieved or not saved. Returns
 
 Arguments:
 
- See L<http://browshot.com/api/documentation#thumbnails> for the full list of possible arguments.
+See L<http://browshot.com/api/documentation#thumbnails> for the full list of possible arguments.
 
 =over 4
 

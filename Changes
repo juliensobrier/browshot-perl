@@ -13,6 +13,9 @@ Revision history for Perl extension WebService::Browshot.
 	- Support for /api/v1/account/info
 
 1.2.1  Sat Nov 19 20:11:00 2011
-	- Add depenecy to LWP::Protocol::https
+	- Add dependency to LWP::Protocol::https
 	- Add additional debug messages
 	- Unit tests
+
+1.2.2 Sat Nov 19 20:38:00 2011
+	- WebService::Browshot is on github: https://github.com/juliensobrier/browshot-perl
