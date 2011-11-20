@@ -1,0 +1,287 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>WebService::Browshot - Perl extension for Browshot, a web service to create website screenshots.</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#methods">METHODS</a></li>
+	<ul>
+
+		<li><a href="#new__"><code>new()</code></a></li>
+		<li><a href="#api_version__"><code>api_version()</code></a></li>
+		<li><a href="#instance_list__"><code>instance_list()</code></a></li>
+		<li><a href="#instance_info__"><code>instance_info()</code></a></li>
+		<li><a href="#browser_list__"><code>browser_list()</code></a></li>
+		<li><a href="#browser_info__"><code>browser_info()</code></a></li>
+		<li><a href="#screenshot_create__"><code>screenshot_create()</code></a></li>
+		<li><a href="#screenshot_info__"><code>screenshot_info()</code></a></li>
+		<li><a href="#screenshot_list__"><code>screenshot_list()</code></a></li>
+		<li><a href="#screenshot_thumbnail__"><code>screenshot_thumbnail()</code></a></li>
+		<li><a href="#screenshot_thumbnail_file__"><code>screenshot_thumbnail_file()</code></a></li>
+	</ul>
+
+	<li><a href="#see_also">SEE ALSO</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>WebService::Browshot - Perl extension for Browshot (<a href="http://www.browshot.com/">http://www.browshot.com/</a>), a web service to create website screenshots.</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+  use WebService::Browshot;
+  
+  my $browshot = WebService::Browshot-&gt;new(key =&gt; 'my_key');
+  my $screenshot = $browshot-&gt;screenshot_create(url =&gt; '<a href="http://www.google.com/">http://www.google.com/</a>');
+  [...]
+  $browshot-&gt;screenshot_thumbnail_file(id =&gt; $screenshot-&gt;{id}, file =&gt; 'google.png');</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>Browshot (<a href="http://www.browshot.com/">http://www.browshot.com/</a>) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc. Browshot has full Flash, JavaScript, CSS, &amp; HTML5 support.</p>
+<p>The latest API version is detailed at <a href="http://browshot.com/api/documentation">http://browshot.com/api/documentation</a>. WebService::Browshot follows the API documentation very closely: the function names are similar to the URLs used (screenshot/create becomes <code>screenshot_create()</code>, instance/list becomes <code>instance_list()</code>, etc.), the request arguments are exactly the same, etc.</p>
+<p>The library version matches closely the API version it handles: WebService::Browshot 1.0.0 is the first release for the API 1.0, WebService::Browshot 1.1.1 is the second release for the API 1.1, etc.</p>
+<p>WebService::Browshot can handle most the API updates within the same major version, e.g. WebService::Browshot 1.0.0 should be compatible with the API 1.1 or 1.2.</p>
+<p>
+</p>
+<hr />
+<h1><a name="methods">METHODS</a></h1>
+<p>
+</p>
+<h2><a name="new__"><code>new()</code></a></h2>
+<pre>
+  my $browshot = WebService::Browshot-&gt;new(key =&gt; 'my_key', base =&gt; '<a href="http://api.browshot.com/api/v1/">http://api.browshot.com/api/v1/</a>', debug =&gt; 1]);</pre>
+<p>Create a new WebService::Browshot object. You must pass your API key (go to you Dashboard to find your API key).</p>
+<p>Arguments:</p>
+<dl>
+<dt><strong><a name="item_key">key</a></strong>
+
+<dd>
+<pre>
+ Required.  API key.</pre>
+</dd>
+<dt><strong><a name="item_base">base</a></strong>
+
+<dd>
+<pre>
+ Optional. Base URL for all API requests. You should use the default base provided by the library. Be careful if you decide to use HTTP instead of HTTPS as your API key could be sniffed and your account could be used without your consent.</pre>
+</dd>
+<dt><strong><a name="item_debug">debug</a></strong>
+
+<dd>
+<pre>
+ Optional. Set to 1 to print debug output to the standard output. 0 (disabled) by default.</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="api_version__"><code>api_version()</code></a></h2>
+<p>Print the API version handled by the library. Note that this library can usually handle new arguments in requests without requiring an update.</p>
+<p>
+</p>
+<h2><a name="instance_list__"><code>instance_list()</code></a></h2>
+<p>Return the list of instances as a hash reference. See <a href="http://browshot.com/api/documentation#instance_list">http://browshot.com/api/documentation#instance_list</a> for the response format.</p>
+<p>
+</p>
+<h2><a name="instance_info__"><code>instance_info()</code></a></h2>
+<pre>
+   $browshot-&gt;instance_info(id =&gt; 2)</pre>
+<p>Return the details of an instance. See <a href="http://browshot.com/api/documentation#instance_info">http://browshot.com/api/documentation#instance_info</a> for the response format.</p>
+<p>Arguments:</p>
+<dl>
+<dt><strong><a name="item_id">id</a></strong>
+
+<dd>
+<pre>
+ Required. Instance ID</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="browser_list__"><code>browser_list()</code></a></h2>
+<p>Return the list of browsers as a hash reference. See <a href="http://browshot.com/api/documentation#browser_list">http://browshot.com/api/documentation#browser_list</a> for the response format.</p>
+<p>
+</p>
+<h2><a name="browser_info__"><code>browser_info()</code></a></h2>
+<pre>
+   $browshot-&gt;browser_info(id =&gt; 2)</pre>
+<p>Return the details of a browser. See <a href="http://browshot.com/api/documentation#browser_info">http://browshot.com/api/documentation#browser_info</a> for the response format.</p>
+<p>Arguments:</p>
+<dl>
+<dt><strong>id</strong>
+
+<dd>
+<pre>
+ Required. Browser ID</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="screenshot_create__"><code>screenshot_create()</code></a></h2>
+<pre>
+  $browshot-&gt;screenshot_create(url =&gt; '<a href="http://wwww.google.com/">http://wwww.google.com/</a>, instance_id =&gt; 3, size =&gt; 'page')</pre>
+<p>Request a screenshot. See <a href="http://browshot.com/api/documentation#screenshot_create">http://browshot.com/api/documentation#screenshot_create</a> for the response format.</p>
+<p>Arguments:</p>
+<pre>
+ See L&lt;<a href="http://browshot.com/api/documentation#screenshot_create">http://browshot.com/api/documentation#screenshot_create</a> &gt; for the full list of possible arguments.</pre>
+<dl>
+<dt><strong><a name="item_url">url</a></strong>
+
+<dd>
+<pre>
+ Required. URL of the website to create a screenshot of.</pre>
+</dd>
+<dt><strong><a name="item_instance_id">instance_id</a></strong>
+
+<dd>
+<pre>
+ Optional. Instance ID to use for the screenshot.</pre>
+</dd>
+<dt><strong><a name="item_size">size</a></strong>
+
+<dd>
+<pre>
+ Optional. Screenshot size.</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="screenshot_info__"><code>screenshot_info()</code></a></h2>
+<pre>
+  $browshot-&gt;screenshot_info(id =&gt; 568978)</pre>
+<p>Get information about a screenshot requested previously. See <a href="http://browshot.com/api/documentation#screenshot_info">http://browshot.com/api/documentation#screenshot_info</a> for the response format.</p>
+<p>Arguments:</p>
+<dl>
+<dt><strong>id</strong>
+
+<dd>
+<pre>
+ Required. Screenshot ID.</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="screenshot_list__"><code>screenshot_list()</code></a></h2>
+<pre>
+  $browshot-&gt;screenshot_list(limit =&gt; 50)</pre>
+<p>Get details about screenshot requested. See <a href="http://browshot.com/api/documentation#screenshot_list">http://browshot.com/api/documentation#screenshot_list</a> for the response format.</p>
+<p>Arguments:</p>
+<dl>
+<dt><strong><a name="item_limit">limit</a></strong>
+
+<dd>
+<pre>
+ Optional. Maximum number of screenshots to retrieve.</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="screenshot_thumbnail__"><code>screenshot_thumbnail()</code></a></h2>
+<pre>
+  $browshot-&gt;screenshot_thumbnail(url =&gt; 'https://ww.browshot.com/screenshot/image/52942?key=my_key', width =&gt; 500)</pre>
+<p>Retrieve the screenshot, or a thumbnail. See <a href="http://browshot.com/api/documentation#thumbnails">http://browshot.com/api/documentation#thumbnails</a> for the response format.</p>
+<p>Return an empty string if the image could not be retrieved.</p>
+<p>Arguments:</p>
+<pre>
+ See L&lt;<a href="http://browshot.com/api/documentation#thumbnails&gt">http://browshot.com/api/documentation#thumbnails&gt</a>; for the full list of possible arguments.</pre>
+<dl>
+<dt><strong>url</strong>
+
+<dd>
+<pre>
+ Required. URL of the screenshot (screenshot_url value retrieved from C&lt;screenshot_create()&gt; or C&lt;screenshot_info()&gt;). You will get the full image if no other argument is specified.</pre>
+</dd>
+<dt><strong><a name="item_width">width</a></strong>
+
+<dd>
+<pre>
+ Optional. Maximum width of the thumbnail.</pre>
+</dd>
+<dt><strong><a name="item_height">height</a></strong>
+
+<dd>
+<pre>
+ Optional. Maximum height of the thumbnail.</pre>
+</dd>
+</dl>
+<p>
+</p>
+<h2><a name="screenshot_thumbnail_file__"><code>screenshot_thumbnail_file()</code></a></h2>
+<pre>
+  $browshot-&gt;screenshot_thumbnail_file(url =&gt; 'https://ww.browshot.com/screenshot/image/52942?key=my_key', height =&gt; 500, file =&gt; '/tmp/google.png')</pre>
+<p>Retrieve the screenshot, or a thumbnail, and save it to a file. See <a href="http://browshot.com/api/documentation#thumbnails">http://browshot.com/api/documentation#thumbnails</a> for the response format.</p>
+<p>Return an empty string if the image could not be retrieved or not saved. Returns the file name if successful.</p>
+<p>Arguments:</p>
+<pre>
+ See L&lt;<a href="http://browshot.com/api/documentation#thumbnails&gt">http://browshot.com/api/documentation#thumbnails&gt</a>; for the full list of possible arguments.</pre>
+<dl>
+<dt><strong>url</strong>
+
+<dd>
+<pre>
+ Required. URL of the screenshot (screenshot_url value retrieved from C&lt;screenshot_create()&gt; or C&lt;screenshot_info()&gt;). You will get the full image if no other argument is specified.</pre>
+</dd>
+<dt><strong><a name="item_file">file</a></strong>
+
+<dd>
+<pre>
+ Required. Local file name to write to.</pre>
+</dd>
+<dt><strong>width</strong>
+
+<dd>
+<pre>
+ Optional. Maximum width of the thumbnail.</pre>
+</dd>
+<dt><strong>height</strong>
+
+<dd>
+<pre>
+ Optional. Maximum height of the thumbnail.</pre>
+</dd>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p>See <a href="http://browshot.com/api/documentation">http://browshot.com/api/documentation</a> for the API documentation.</p>
+<p>Create a free account at <a href="http://browshot.com/login">http://browshot.com/login</a> to get your free API key.</p>
+<p>Go to <a href="http://browshot.com/dashboard">http://browshot.com/dashboard</a> to find your API key after you registered.</p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p>Julien Sobrier, &lt;<a href="mailto:julien@sobrier.net">julien@sobrier.net</a>&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2011 by Julien Sobrier</p>
+<p>This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.</p>
+
+</body>
+
+</html>
