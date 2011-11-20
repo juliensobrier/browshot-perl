@@ -1,0 +1,6 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/WebService-Browshot.t
+lib/WebService/Browshot.pm

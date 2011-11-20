@@ -1,7 +1,7 @@
-WebService-Browshot version 1.2.1
+WebService::Browshot version 1.2.1
 ================================
 
-Perl extension for Browshot (L<http://www.browshot.com/>), a web service to create website screenshots.
+Perl extension for Browshot http://www.browshot.com/ , a web service to create website screenshots.
 
 INSTALLATION
 
@@ -20,6 +20,13 @@ This module requires these other modules and libraries:
   JSON
   LWP::UserAgent
 
+SOURCE
+
+The source code is available on github at https://github.com/juliensobrier/browshot-perl
+
+CPAN
+
+The library is available on CPAN at http://search.cpan.org/perldoc?WebService::Browshot
 
 COPYRIGHT AND LICENCE
 

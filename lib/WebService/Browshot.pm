@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.2.1';
+our $VERSION = '1.2.2';
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ WebService::Browshot - Perl extension for Browshot (L<http://www.browshot.com/>)
 
 =head1 DESCRIPTION
 
-Browshot (L<http://www.browshot.com/>) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone©, iPad©, Android©, Nook©, PC, etc. Browshot has full Flash, JavaScript, CSS, & HTML5 support.
+Browshot (L<http://www.browshot.com/>) is a web service to easily make screenshots of web pages in any screen size, as any device: iPhone, iPad, Android, Nook, PC, etc. Browshot has full Flash, JavaScript, CSS, & HTML5 support.
 
 The latest API version is detailed at L<http://browshot.com/api/documentation>. WebService::Browshot follows the API documentation very closely: the function names are similar to the URLs used (screenshot/create becomes C<screenshot_create()>, instance/list becomes C<instance_list()>, etc.), the request arguments are exactly the same, etc.
 
