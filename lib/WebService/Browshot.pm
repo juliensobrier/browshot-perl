@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.2.2';
+our $VERSION = '1.3.0';
 
 =head1 NAME
 
@@ -274,7 +274,7 @@ sub screenshot_info {
 
   $browshot->screenshot_list(limit => 50)
 
-Get details about screenshot requested. See L<http://browshot.com/api/documentation#screenshot_list> for the response format.
+Get details about screenshots requested. See L<http://browshot.com/api/documentation#screenshot_list> for the response format.
 
 Arguments:
 

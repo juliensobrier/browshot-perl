@@ -5,7 +5,7 @@
 
 # use Data::Dumper;
 
-use Test::More tests => 135;
+use Test::More tests => 138;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -13,10 +13,10 @@ require_ok( 'WebService::Browshot' );
 
 my $browshot = WebService::Browshot->new(
 	key		=> 'vPTtKKLBtPUNxVwwfEKlVvekuxHyTXyi', # test1
-# 	debug	=> 1,
+	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.2', "API version");
+is($browshot->api_version(), '1.3', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
@@ -27,7 +27,7 @@ SKIP: {
 	my $response = $ua->get('https://browshot.com/');
 # 	print $response->as_string, "\n";
 
-    skip "Unable to access https://browshot.com/", 132 if (! $response->is_success);
+    skip "Unable to access https://browshot.com/", 136 if (! $response->is_success);
 
     my $instances = $browshot->instance_list();
 	
@@ -149,7 +149,7 @@ SKIP: {
 	ok( exists $screenshot->{priority}, 			"Screenshot priority is present");
 	
 	SKIP: {
-		skip "Screenshot is not finished", 15 if ($screenshot->{status} ne 'finished');
+		skip "Screenshot is not finished", 16 if ($screenshot->{status} ne 'finished');
 
 		ok( exists $screenshot->{screenshot_url}, 	"Screenshot screenshot_url is present");
 		ok( exists $screenshot->{url}, 				"Screenshot url is present");
@@ -166,6 +166,7 @@ SKIP: {
 		ok( exists $screenshot->{final_url}, 		"Screenshot final_url is present");
 		ok( exists $screenshot->{content_type}, 	"Screenshot content_type is present");
 		ok( exists $screenshot->{scale}, 			"Screenshot scale is present");
+		ok( exists $screenshot->{cost}, 			"Screenshot cost is present");
 	}
 
 	my $screenshot2 = $browshot->screenshot_info();
@@ -177,7 +178,7 @@ SKIP: {
 	ok( exists $screenshot2->{priority}, 			"Screenshot priority is present");
 
 	SKIP: {
-		skip "Screenshot is not finished", 15 if ($screenshot2->{status} ne 'finished');
+		skip "Screenshot is not finished", 16 if ($screenshot2->{status} ne 'finished');
 
 		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
 		ok( exists $screenshot2->{url}, 			"Screenshot url is present");
@@ -194,6 +195,7 @@ SKIP: {
 		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
 		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
 		ok( exists $screenshot2->{scale}, 			"Screenshot scale is present");
+		ok( exists $screenshot2->{cost}, 			"Screenshot cost is present");
 	}
 
 	my $screenshots = $browshot->screenshot_list();
@@ -225,7 +227,7 @@ SKIP: {
 	ok( exists $screenshot->{final_url}, 			"Screenshot final_url is present");
 	ok( exists $screenshot->{content_type}, 		"Screenshot content_type is present");
 	ok( exists $screenshot->{scale}, 				"Screenshot scale is present");
-
+	ok( exists $screenshot->{cost}, 				"Screenshot scale is present");
 
 	# Thumbnail
 	# TODO
@@ -251,4 +253,4 @@ SKIP: {
 	ok( exists $account->{error}, 				"Missing key");
 }
 
-done_testing(135)
+# done_testing(138);
