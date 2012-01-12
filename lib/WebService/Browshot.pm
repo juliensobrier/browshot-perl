@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.3.0';
+our $VERSION = '1.4.0';
 
 =head1 NAME
 
@@ -52,7 +52,7 @@ Arguments:
 
 =item key
 
- Required.  API key.
+Required.  API key.
 
 =item base
 
@@ -60,7 +60,7 @@ Arguments:
 
 =item debug
 
- Optional. Set to 1 to print debug output to the standard output. 0 (disabled) by default.
+Optional. Set to 1 to print debug output to the standard output. 0 (disabled) by default.
 
 =back
 
@@ -70,14 +70,18 @@ sub new {
   	my ($self, %args) = @_;
 
 	my $ua = LWP::UserAgent->new();
-	$ua->timeout(60);
+	$ua->timeout(90);
 	$ua->env_proxy;
+	$ua->max_redirect(32); # for the simple API only
 	$ua->agent("WebService::Browshot $VERSION");
 
   	my $browshot = {	
 		_key	=> $args{key}	|| '',
 		_base	=> $args{base}	|| 'https://api.browshot.com/api/v1/',
 		_debug	=> $args{debug}	|| 0,
+
+		_retry	=> 2,
+		last_error	=> '',
 
 		_ua		=> $ua,
 	};
@@ -100,6 +104,91 @@ sub api_version {
 	}
 
 	return $VERSION;
+}
+
+
+
+=head2 simple()
+
+   $browshot->simple(url => 'http://mobilito.net')
+
+Retrieve a screenshot in one function.
+
+Return an aray (status code, PNG). See L<http://browshot.com/api/documentation#simple> for the list of possible status codes.
+
+Arguments:
+
+See L<http://browshot.com/api/documentation#simple> for the full list of possible arguments.
+
+=over 4
+
+=item url
+
+Required. URL of the website to create a screenshot of.
+
+=back
+
+=cut
+
+sub simple {
+	my ($self, %args) = @_;
+
+	my $url	= $self->make_url(action => 'simple', parameters => { %args });
+	my $res = $self->{_ua}->get($url);
+
+# 	$self->info($res->message);
+# 	$self->info($res->request->as_string);
+# 	$self->info($res->as_string);
+	
+	return ($res->code, $res->decoded_content);
+}
+
+=head2 simple_file()
+
+   $browshot->simple_file(url => 'http://mobilito.net', file => '/tmp/mobilito.png')
+
+Retrieve a screenshot and save it localy in one function.
+
+Return an aray (status code, file name). The file name is empty if the screenshot wasa not retrieved. See L<http://browshot.com/api/documentation#simple> for the list of possible status codes.
+
+Arguments:
+
+See L<http://browshot.com/api/documentation#simple> for the full list of possible arguments.
+
+=over 4
+
+=item url
+
+Required. URL of the website to create a screenshot of.
+
+=item file
+
+Required. Local file name to write to.
+
+=back
+
+=cut
+
+sub simple_file {
+	my ($self, %args) 	= @_;
+	my $file			= $args{file}	|| $self->error("Missing file in simple_file");
+
+	my $url	= $self->make_url(action => 'simple', parameters => { %args });
+	my $res = $self->{_ua}->get($url);
+
+	my $content = $res->decoded_content;
+
+	if ($content ne '') {
+		open TARGET, "> $file" or $self->error("Cannot open $file for writing: $!");
+		print TARGET $content;
+		close TARGET;
+
+		return ($res->code, $file);
+	}
+	else {
+		$self->error("No thumbnail retrieved");
+		return ($res->code, '');
+	}
 }
 
 =head2 instance_list()
@@ -138,7 +227,7 @@ Arguments:
 
 =item id
 
- Required. Instance ID
+Required. Instance ID
 
 =back
 
@@ -150,7 +239,6 @@ sub instance_info  {
 
 	return $self->return_reply(action => 'instance/info', parameters => { id => $id });
 }
-
 
 =head2 browser_list()
 
@@ -176,7 +264,7 @@ Arguments:
 
 =item id
 
- Required. Browser ID
+Required. Browser ID
 
 =back
 
@@ -215,15 +303,15 @@ See L<http://browshot.com/api/documentation#screenshot_create> for the full list
 
 =item url
 
- Required. URL of the website to create a screenshot of.
+Required. URL of the website to create a screenshot of.
 
 =item instance_id
 
- Optional. Instance ID to use for the screenshot.
+Optional. Instance ID to use for the screenshot.
 
 =item size
 
- Optional. Screenshot size.
+Optional. Screenshot size.
 
 =back
 
@@ -256,7 +344,7 @@ Arguments:
 
 =item id
 
- Required. Screenshot ID.
+Required. Screenshot ID.
 
 =back
 
@@ -282,7 +370,7 @@ Arguments:
 
 =item limit
 
- Optional. Maximum number of screenshots to retrieve.
+Optional. Maximum number of screenshots to retrieve.
 
 =back
 
@@ -314,11 +402,11 @@ See L<http://browshot.com/api/documentation#thumbnails> for the full list of pos
 
 =item width
 
- Optional. Maximum width of the thumbnail.
+Optional. Maximum width of the thumbnail.
 
 =item height
 
- Optional. Maximum height of the thumbnail.
+Optional. Maximum height of the thumbnail.
 
 =back
 
@@ -367,15 +455,15 @@ See L<http://browshot.com/api/documentation#thumbnails> for the full list of pos
 
 =item file
 
- Required. Local file name to write to.
+Required. Local file name to write to.
 
 =item width
 
- Optional. Maximum width of the thumbnail.
+Optional. Maximum width of the thumbnail.
 
 =item height
 
- Optional. Maximum height of the thumbnail.
+Optional. Maximum height of the thumbnail.
 
 =back
 
@@ -421,8 +509,18 @@ sub return_reply {
 
 	my $url	= $self->make_url(%args);
 	
+	my $res;
+	my $try = 0;
 
-	my $res = $self->{_ua}->get($url);
+	do {
+		$self->info("Try $try");
+		eval {
+			$res = $self->{_ua}->get($url);
+		};
+		$self->error($@) if ($@);
+		$try++;
+	}
+	until($try < $self->{_retry} && defined $@);
 
 	if ($res->is_success) {
 		my $info;
@@ -470,6 +568,8 @@ sub info {
 sub error {
 	my ($self, $message) = @_;
 
+	$self->{last_error} = $message;
+
 	if ($self->{_debug}) {
 		print $message, "\n";
 	}
@@ -484,9 +584,19 @@ sub generic_error {
 	return { error => 1, message => $message };
 }
 
-=pod
+=head1 CHANGES
 
-=cut
+=over 4
+
+=item 1.4.0
+
+Add C<simple> and C<simple_file> methods.
+
+=item 1.3.1
+
+Retry requests (up to 2 times) to browshot.com in case of error
+
+=back
 
 =head1 SEE ALSO
 

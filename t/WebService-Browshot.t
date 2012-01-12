@@ -13,10 +13,11 @@ require_ok( 'WebService::Browshot' );
 
 my $browshot = WebService::Browshot->new(
 	key		=> 'vPTtKKLBtPUNxVwwfEKlVvekuxHyTXyi', # test1
-	debug	=> 1,
+# 	base	=> 'http://127.0.0.1:3000/api/v1/',
+# 	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.3', "API version");
+is($browshot->api_version(), '1.4', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
@@ -198,7 +199,11 @@ SKIP: {
 		ok( exists $screenshot2->{cost}, 			"Screenshot cost is present");
 	}
 
-	my $screenshots = $browshot->screenshot_list();
+	my $screenshots;
+	eval {
+		$screenshots = $browshot->screenshot_list();
+	};
+	print $@, "\n" if ($@);
 	ok( scalar (keys %$screenshots) > 0, 			"Screenshots are present");
 
 	my $screenshot_id = 0;
@@ -207,7 +212,12 @@ SKIP: {
 		last;
 	}
 	ok( $screenshot_id > 0, 						"Screenshot ID is correct");
-	$screenshot = $screenshots->{$screenshot_id};
+	
+	$screenshot = '';
+	eval {
+		$screenshot = $screenshots->{$screenshot_id};
+	};
+# 	print $@, "\n" if ($@);
 	
 	ok( exists $screenshot->{id}, 					"Screenshot ID is present");
 	ok( exists $screenshot->{status}, 				"Screenshot status is present");
