@@ -5,7 +5,7 @@
 
 # use Data::Dumper;
 
-use Test::More tests => 138;
+use Test::More tests => 140;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -28,7 +28,11 @@ SKIP: {
 	my $response = $ua->get('https://browshot.com/');
 # 	print $response->as_string, "\n";
 
-    skip "Unable to access https://browshot.com/", 136 if (! $response->is_success);
+    skip "Unable to access https://browshot.com/", 138 if (! $response->is_success);
+
+	my ($code, $png) = $browshot->simple(url => 'http://mobilito.net/', cache => 60 * 60 * 24 * 365); # cached for a year
+	ok( $code == 200, 								"Screenshot should be succesful: $code");
+	ok( length($png) > 0, 							"Screenshot should be succesful");
 
     my $instances = $browshot->instance_list();
 	
