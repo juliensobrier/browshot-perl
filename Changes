@@ -32,3 +32,6 @@ Revision history for Perl extension WebService::Browshot.
 
 1.4.1 Wed Feb 01 22:11:00 2012
 	- Fix URI encoding
+
+1.5.0 Mon Feb 06 20:49:00
+	- Browshot API 1.5, no code change

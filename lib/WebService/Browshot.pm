@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.4.1';
+our $VERSION = '1.5.0';
 
 =head1 NAME
 

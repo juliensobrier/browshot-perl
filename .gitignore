@@ -1,2 +1,8 @@
 .svn
 *~
+blib/
+*.html
+Makefile
+pm_to_blib
+MYMETA.*
+*.pod
