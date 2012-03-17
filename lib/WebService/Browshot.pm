@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.5.0';
+our $VERSION = '1.5.1';
 
 =head1 NAME
 
@@ -180,6 +180,7 @@ sub simple_file {
 
 	if ($content ne '') {
 		open TARGET, "> $file" or $self->error("Cannot open $file for writing: $!");
+		binmode TARGET;
 		print TARGET $content;
 		close TARGET;
 
@@ -476,6 +477,7 @@ sub screenshot_thumbnail_file {
 
 	if ($content ne '') {
 		open TARGET, "> $file" or $self->error("Cannot open $file for writing: $!");
+		binmode TARGET;
 		print TARGET $content;
 		close TARGET;
 
@@ -587,6 +589,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.5.1
+
+Use binmode to create valid PNG files on Windows.
 
 =item 1.4.1
 

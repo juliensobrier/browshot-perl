@@ -35,3 +35,6 @@ Revision history for Perl extension WebService::Browshot.
 
 1.5.0 Mon Feb 06 20:49:00
 	- Browshot API 1.5, no code change
+
+1.5.1 Fri Feb 06 21:43:00
+	- Use binmode to print PNG to fine (Windows compatibility issue)
