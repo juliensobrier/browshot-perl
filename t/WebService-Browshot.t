@@ -5,7 +5,7 @@
 
 # use Data::Dumper;
 
-use Test::More tests => 140;
+use Test::More tests => 136;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -28,7 +28,7 @@ SKIP: {
 	my $response = $ua->get('https://browshot.com/');
 # 	print $response->as_string, "\n";
 
-    skip "Unable to access https://browshot.com/", 138 if (! $response->is_success);
+    skip "Unable to access https://browshot.com/", 134 if (! $response->is_success);
 
 	my ($code, $png) = $browshot->simple(url => 'http://mobilito.net/', cache => 60 * 60 * 24 * 365); # cached for a year
 	ok( $code == 200, 								"Screenshot should be succesful: $code");
@@ -56,26 +56,23 @@ SKIP: {
 	ok( exists $free->{browser}->{flash}, 			"Instance browser flash is present");
 	ok( exists $free->{browser}->{mobile}, 			"Instance browser mobile is present");
 	ok( exists $free->{type}, 						"Instance type is present");
-	ok( exists $free->{active}, 					"Instance active is present");
-	ok( $free->{active} == 1, 						"Instance is active");
 	ok( exists $free->{screenshot_cost}, 			"Instance screenshot_cost is present");
 	ok( $free->{screenshot_cost} == 0, 				"Instance cost is 0");
 
 
 
 	my $instance = $browshot->instance_info(id => $free->{id});
-	ok( $free->{id} == $free->{id}, 										"Correct instance ID");
-	ok( $free->{width} == $free->{width}, 									"Correct instance width");
-	ok( $free->{height} == $free->{height}, 								"Correct instance height");
-	ok( $free->{load} == $free->{load}, 									"Correct instance load");
-	ok( $free->{browser}->{id} == $free->{browser}->{id}, 					"Correct instance browser ID");
-	ok( $free->{browser}->{name} eq $free->{browser}->{name}, 				"Correct instance browser ID");
-	ok( $free->{browser}->{javascript} == $free->{browser}->{javascript}, 	"Correct instance browser javascript");
-	ok( $free->{browser}->{flash} == $free->{browser}->{flash}, 			"Correct instance browser javascript");
-	ok( $free->{browser}->{mobile} == $free->{browser}->{mobile}, 			"Correct instance browser javascript");
-	ok( $free->{type} eq $free->{type}, 									"Correct instance type");
-	ok( $free->{active} == $free->{active}, 								"Correct instance active");
-	ok( $free->{screenshot_cost} == $free->{screenshot_cost}, 				"Correct instance screenshot_cost");
+	ok( $free->{id} == $instance->{id}, 										"Correct instance ID");
+	ok( $free->{width} == $instance->{width}, 									"Correct instance width");
+	ok( $free->{height} == $instance->{height}, 								"Correct instance height");
+	ok( $free->{load} == $instance->{load}, 									"Correct instance load");
+	ok( $free->{browser}->{id} == $instance->{browser}->{id}, 					"Correct instance browser ID");
+	ok( $free->{browser}->{name} eq $instance->{browser}->{name}, 				"Correct instance browser ID");
+	ok( $free->{browser}->{javascript} == $instance->{browser}->{javascript}, 	"Correct instance browser javascript");
+	ok( $free->{browser}->{flash} == $instance->{browser}->{flash}, 			"Correct instance browser javascript");
+	ok( $free->{browser}->{mobile} == $instance->{browser}->{mobile}, 			"Correct instance browser javascript");
+	ok( $free->{type} eq $instance->{type}, 									"Correct instance type");
+	ok( $free->{screenshot_cost} == $instance->{screenshot_cost}, 				"Correct instance screenshot_cost");
 
 	my $missing = $browshot->instance_info(id => -1);
 	ok( exists $missing->{error}, 					"Instance was not found");
@@ -95,7 +92,6 @@ SKIP: {
 	my $fake = $browshot->instance_create();
 	ok( exists $fake->{id}, 						"Instance was created");
 	ok( exists $fake->{width}, 						"Instance was created");
-	ok( exists $fake->{active}, 					"Instance was created");
 	ok( exists $fake->{browser}, 					"Instance was created");
 	ok( exists $fake->{browser}->{id}, 				"Instance was created");
 

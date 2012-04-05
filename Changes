@@ -41,3 +41,6 @@ Revision history for Perl extension WebService::Browshot.
 
 1.6.0 Sun Mar 18 14:40:00
 	- Browshot API 1.6, no code change
+
+1.6.1 Wed Apr 04 21:42:00
+	- Fix unti tests for instance_info
