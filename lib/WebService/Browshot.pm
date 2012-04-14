@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.6.1';
+our $VERSION = '1.7.0';
 
 =head1 NAME
 
@@ -356,7 +356,7 @@ sub screenshot_info {
 	my $id				= $args{id}	|| $self->error("Missing id in screenshot_info");
 
 
-	return $self->return_reply(action => 'screenshot/info', parameters => { id => $id });
+	return $self->return_reply(action => 'screenshot/info', parameters => { %args });
 }
 
 =head2 screenshot_list()
@@ -589,6 +589,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.7.0
+
+Update C<screenshot_info> to handle additional parameters
 
 =item 1.5.1
 

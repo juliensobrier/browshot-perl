@@ -3,9 +3,9 @@
 
 #########################
 
-# use Data::Dumper;
+use Data::Dumper;
 
-use Test::More tests => 136;
+use Test::More tests => 162;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -13,11 +13,11 @@ require_ok( 'WebService::Browshot' );
 
 my $browshot = WebService::Browshot->new(
 	key		=> 'vPTtKKLBtPUNxVwwfEKlVvekuxHyTXyi', # test1
-# 	base	=> 'http://127.0.0.1:3000/api/v1/',
+	base	=> 'http://127.0.0.1:3000/api/v1/',
 # 	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.6', "API version");
+is($browshot->api_version(), '1.7', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
@@ -88,12 +88,13 @@ SKIP: {
 	$wrong = $browshot->instance_create(browser_id => -1);
 	ok( exists $wrong->{error}, 					"Invalid browser_id");
 
-	# Instance is not actually created for test account, so the reply may not match our parameters
+	# Privaet instances is enabled for a few account only
 	my $fake = $browshot->instance_create();
-	ok( exists $fake->{id}, 						"Instance was created");
-	ok( exists $fake->{width}, 						"Instance was created");
-	ok( exists $fake->{browser}, 					"Instance was created");
-	ok( exists $fake->{browser}->{id}, 				"Instance was created");
+	ok( exists $fake->{error}, 						"Private instances not enabled for this account");
+# 	ok( exists $fake->{id}, 						"Instance was created");
+# 	ok( exists $fake->{width}, 						"Instance was created");
+# 	ok( exists $fake->{browser}, 					"Instance was created");
+# 	ok( exists $fake->{browser}->{id}, 				"Instance was created");
 
 
 	my $browsers = $browshot->browser_list();
@@ -121,19 +122,20 @@ SKIP: {
 	ok( exists $browser->{flash}, 					"Browser flash exists");
 
 
-	# browser is not actually created for test account, so the reply may not match our parameters
+	# Browswer creation is disabled for most accounts
 	my $new = $browshot->browser_create(mobile => 1, flash => 1, user_agent => 'test');
-	ok( exists $new->{name}, 						"Browser name exists");
-	ok( exists $new->{user_agent}, 					"Browser user_agent exists");
-	ok( exists $new->{appname}, 					"Browser appname exists");
-	ok( exists $new->{vendorsub}, 					"Browser vendorsub exists");
-	ok( exists $new->{appcodename}, 				"Browser appcodename exists");
-	ok( exists $new->{platform}, 					"Browser platform exists");
-	ok( exists $new->{vendor}, 						"Browser vendor exists");
-	ok( exists $new->{appversion}, 					"Browser appversion exists");
-	ok( exists $new->{javascript}, 					"Browser javascript exists");
-	ok( exists $new->{mobile}, 						"Browser mobile exists");
-	ok( exists $new->{flash}, 						"Browser flash exists");
+	ok( exists $new->{error}, 						"Browser cannot be created with this account");
+# 	ok( exists $new->{name}, 						"Browser name exists");
+# 	ok( exists $new->{user_agent}, 					"Browser user_agent exists");
+# 	ok( exists $new->{appname}, 					"Browser appname exists");
+# 	ok( exists $new->{vendorsub}, 					"Browser vendorsub exists");
+# 	ok( exists $new->{appcodename}, 				"Browser appcodename exists");
+# 	ok( exists $new->{platform}, 					"Browser platform exists");
+# 	ok( exists $new->{vendor}, 						"Browser vendor exists");
+# 	ok( exists $new->{appversion}, 					"Browser appversion exists");
+# 	ok( exists $new->{javascript}, 					"Browser javascript exists");
+# 	ok( exists $new->{mobile}, 						"Browser mobile exists");
+# 	ok( exists $new->{flash}, 						"Browser flash exists");
 
 
 
@@ -171,7 +173,7 @@ SKIP: {
 	}
 
 	my $screenshot2 = $browshot->screenshot_info();
-	ok( exists $screenshot2->{error}, 				"Screenshot is missing");
+	ok( exists $screenshot2->{error}, 				"Screenshot ID is missing");
 
 	$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id});
 	ok( exists $screenshot2->{id}, 					"Screenshot ID is present");
@@ -179,7 +181,7 @@ SKIP: {
 	ok( exists $screenshot2->{priority}, 			"Screenshot priority is present");
 
 	SKIP: {
-		skip "Screenshot is not finished", 16 if ($screenshot2->{status} ne 'finished');
+		skip "Screenshot is not finished", 44 if ($screenshot2->{status} ne 'finished');
 
 		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
 		ok( exists $screenshot2->{url}, 			"Screenshot url is present");
@@ -197,6 +199,47 @@ SKIP: {
 		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
 		ok( exists $screenshot2->{scale}, 			"Screenshot scale is present");
 		ok( exists $screenshot2->{cost}, 			"Screenshot cost is present");
+		ok( ! exists $screenshot2->{images}, 		"Screenshot images are NOT present");
+
+
+		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 0);
+		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
+		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
+		ok( ! exists $screenshot2->{response_code}, "Screenshot response_code is NOT present");
+		ok( ! exists $screenshot2->{content_type}, 	"Screenshot content_type is NOT present");
+		ok( ! exists $screenshot2->{finished}, 		"Screenshot finished is NOT present");
+		ok( ! exists $screenshot2->{images}, 		"Screenshot images are NOT present");
+		
+
+		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 1);
+		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
+		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
+		ok( exists $screenshot2->{response_code}, "Screenshot response_code is present");
+		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
+		ok( ! exists $screenshot2->{started}, 		"Screenshot started is NOT present");
+		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
+
+
+		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 2);
+		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
+		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
+		ok( exists $screenshot2->{response_code}, 	"Screenshot response_code is present");
+		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
+		ok( exists $screenshot2->{started}, 		"Screenshot started is present");
+		ok( exists $screenshot2->{finished}, 		"Screenshot finished is present");
+		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
+
+
+		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 3);
+		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
+		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
+		ok( exists $screenshot2->{response_code}, 	"Screenshot response_code is present");
+		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
+		ok( exists $screenshot2->{started}, 		"Screenshot started is present");
+		ok( exists $screenshot2->{finished}, 		"Screenshot finished is present");
+		ok( exists $screenshot2->{iframes}, 		"Screenshot images are present");
+		ok( exists $screenshot2->{scripts}, 		"Screenshot scripts are present");
+		ok( exists $screenshot2->{iframes}, 		"Screenshot iframes are present");
 	}
 
 	my $screenshots;
@@ -238,6 +281,25 @@ SKIP: {
 	ok( exists $screenshot->{content_type}, 		"Screenshot content_type is present");
 	ok( exists $screenshot->{scale}, 				"Screenshot scale is present");
 	ok( exists $screenshot->{cost}, 				"Screenshot scale is present");
+	ok( ! exists $screenshot->{images}, 			"Screenshot images are NOT present");
+
+
+	$screenshots = $browshot->screenshot_list(details => 0);
+	$screenshot_id = 0;
+	foreach my $key (keys %$screenshots) {
+		$screenshot_id = $key;
+		last;
+	}
+	ok( $screenshot_id > 0, 						"Screenshot ID is correct");
+	$screenshot = $screenshots->{$screenshot_id};
+
+	ok( exists $screenshot->{id}, 					"Screenshot ID is present");
+	ok( exists $screenshot->{final_url}, 			"Screenshot final_url is present");
+	ok( ! exists $screenshot->{response_code}, 		"Screenshot response_code is NOT present");
+	ok( ! exists $screenshot->{content_type}, 		"Screenshot content_type is NOT present");
+	ok( ! exists $screenshot->{finished}, 			"Screenshot finished is NOT present");
+	ok( ! exists $screenshot->{images}, 			"Screenshot images are NOT present");
+	
 
 	# Thumbnail
 	# TODO
@@ -250,7 +312,8 @@ SKIP: {
 	ok( exists $account->{active}, 					"Account active is present");
 	is( $account->{active}, 1, 						"Account is active");
 	ok( exists $account->{instances}, 				"Account instances is present");
-
+	ok( exists $account->{free_screenshots_left}, 	"Free screenshots is present");
+	ok( $account->{free_screenshots_left} > 0,		"Free screenshots left");
 
 
 	# Error tests
