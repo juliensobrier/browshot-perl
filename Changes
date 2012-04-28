@@ -47,4 +47,7 @@ Revision history for Perl extension WebService::Browshot.
 
 1.7.0 Fri Apr 13 20:42:00
 	- Update screnshot_info to handle new parameters
-	-  Update unit tests for API 1.7
+	- Update unit tests for API 1.7
+
+1.8.0 Wed Apr 25 20:18:00
+	- API 1.8.0

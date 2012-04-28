@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.7.0';
+our $VERSION = '1.8.0';
 
 =head1 NAME
 
@@ -383,23 +383,32 @@ sub screenshot_list {
 	return $self->return_reply(action => 'screenshot/list', parameters => { %args });
 }
 
+
+sub screenshot_host {
+	my ($self, %args) 	= @_;
+	my $id				= $args{id}	|| $self->error("Missing id in screenshot_host");
+
+	return $self->return_reply(action => 'screenshot/host', parameters => { %args });
+}
+
+
 =head2 screenshot_thumbnail()
 
-  $browshot->screenshot_thumbnail(url => 'https://ww.browshot.com/screenshot/image/52942?key=my_key', width => 500)
+  $browshot->screenshot_thumbnail(id => 52942, width => 500)
 
-Retrieve the screenshot, or a thumbnail. See L<http://browshot.com/api/documentation#thumbnails> for the response format.
+Retrieve the screenshot, or a thumbnail. See L<http://browshot.com/api/documentation#screenshot_thumbnail> for the response format.
 
 Return an empty string if the image could not be retrieved.
 
 Arguments:
 
-See L<http://browshot.com/api/documentation#thumbnails> for the full list of possible arguments.
+See L<http://browshot.com/api/documentation#screenshot_thumbnail> for the full list of possible arguments.
 
 =over 4
 
-=item url
+=item id
 
- Required. URL of the screenshot (screenshot_url value retrieved from C<screenshot_create()> or C<screenshot_info()>). You will get the full image if no other argument is specified.
+Required. Screenshot ID.
 
 =item width
 
@@ -414,19 +423,12 @@ Optional. Maximum height of the thumbnail.
 =cut
 sub screenshot_thumbnail {
 	my ($self, %args) 	= @_;
-	my $url				= $args{url}	|| $self->error("Missing url in screenshot_thumbnail");
-	my $width			= $args{width};
-	my $height			= $args{height};
-	my $zoom			= $args{zoom};
-	my $ratio			= $args{ratio};
+	my $id				= $args{id}	|| $self->error("Missing id in screenshot_thumbnail");
 
 
-	$url .= '&width='  . uri_encode($width)  if (defined $width);
-	$url .= '&height=' . uri_encode($height) if (defined $height);
-	$url .= '&zoom='   . uri_encode($zoom)   if (defined $zoom);
-	$url .= '&ratio='  . uri_encode($ratio)  if (defined $ratio);
+	my $url	= $self->make_url(action => 'screenshot/thumbnail', %args);
+	my $res =  $self->{_ua}->get($url);
 
-	my $res = $self->{_ua}->get($url);
 	if ($res->is_success) {
 		return $res->decoded_content; # raw image file content
 	}
@@ -435,6 +437,7 @@ sub screenshot_thumbnail {
 		return '';
 	}
 }
+
 
 =head2 screenshot_thumbnail_file()
 
@@ -589,6 +592,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.8.0
+
+Update C<screenshot_thumbnail> to use new API.
 
 =item 1.7.0
 

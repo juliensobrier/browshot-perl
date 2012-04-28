@@ -5,7 +5,7 @@
 
 use Data::Dumper;
 
-use Test::More tests => 162;
+use Test::More tests => 174;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -13,11 +13,11 @@ require_ok( 'WebService::Browshot' );
 
 my $browshot = WebService::Browshot->new(
 	key		=> 'vPTtKKLBtPUNxVwwfEKlVvekuxHyTXyi', # test1
-	base	=> 'http://127.0.0.1:3000/api/v1/',
+# 	base	=> 'http://127.0.0.1:3000/api/v1/',
 # 	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.7', "API version");
+is($browshot->api_version(), '1.8', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
@@ -280,7 +280,7 @@ SKIP: {
 	ok( exists $screenshot->{final_url}, 			"Screenshot final_url is present");
 	ok( exists $screenshot->{content_type}, 		"Screenshot content_type is present");
 	ok( exists $screenshot->{scale}, 				"Screenshot scale is present");
-	ok( exists $screenshot->{cost}, 				"Screenshot scale is present");
+	ok( exists $screenshot->{cost}, 				"Screenshot cost is present");
 	ok( ! exists $screenshot->{images}, 			"Screenshot images are NOT present");
 
 
@@ -302,10 +302,49 @@ SKIP: {
 	
 
 	# Thumbnail
-	# TODO
+	$screenshots = $browshot->screenshot_list(details => 0);
+# 	print Dumper($screenshots);
+	$screenshot_id = 0;
+	foreach my $key (keys %$screenshots) {
+		if ($screenshots->{$key}->{status} eq 'finished') {
+			$screenshot_id = $key;
+			last;
+		}
+	}
+
+	SKIP: {
+		skip "No finished screenshot found", 1 if ($screenshot_id == 0);
+
+		my $thumbnail = $browshot->screenshot_thumbnail(id => $screenshot_id, width => 640);
+		ok( $thumbnail ne '', 						"Thumbnail was successful");
+		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file");
+	}
+
+# 	my $thumbnail = $browshot->screenshot_thumbnail(id => -1, width => 640);
+# 	is( $thumbnail, '', 							"Missing screenshot ID");
 
 
+	# Hosting disabled for this account
+	my $hosting = $browshot->screenshot_host(id => $screenshot_id);
+	is( $hosting->{status}, 'error', 					"Default hosting option not enabled for this account");
 
+	$hosting = $browshot->screenshot_host(id => $screenshot_id), hosting => 's3';
+	is( $hosting->{status}, 'error', 					"S3 hosting option not enabled for this account");
+
+	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 's3', bucket => 'mine');
+	is( $hosting->{status}, 'error', 					"S3 hosting option not enabled for this account");
+
+	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'cdn');
+	is( $hosting->{status}, 'error', 					"CDN hosting option not enabled for this account");
+
+	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'browshot');
+	is( $hosting->{status}, 'error', 					"Browshot hosting option not enabled for this account");
+
+	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'foobar');
+	is( $hosting->{status}, 'error', 					"CDN hosting option incorrect");
+
+
+	# Account information
 	my $account = $browshot->account_info();
 	ok( exists $account->{balance}, 				"Account balance is present");
 	is( $account->{balance}, 0, 					"Balance is empty");
@@ -314,6 +353,10 @@ SKIP: {
 	ok( exists $account->{instances}, 				"Account instances is present");
 	ok( exists $account->{free_screenshots_left}, 	"Free screenshots is present");
 	ok( $account->{free_screenshots_left} > 0,		"Free screenshots left");
+	is( $account->{private_instances}, 0, 			"Private instances disabled");
+	is( $account->{hosting_s3}, 0, 					"S3 hosting disabled");
+	is( $account->{hosting_cdn}, 0, 				"CDN hosting disabled");
+	is( $account->{hosting_browshot}, 0, 			"Browshot hosting disabled");
 
 
 	# Error tests
