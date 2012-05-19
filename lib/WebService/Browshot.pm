@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.9.0';
+our $VERSION = '1.9.1';
 
 =head1 NAME
 
@@ -112,7 +112,7 @@ sub api_version {
 
    $browshot->simple(url => 'http://mobilito.net')
 
-Retrieve a screenshot in one function.
+Retrieve a screenshot in one function. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
 
 Return an aray (status code, PNG). See L<http://browshot.com/api/documentation#simple> for the list of possible status codes.
 
@@ -147,7 +147,7 @@ sub simple {
 
    $browshot->simple_file(url => 'http://mobilito.net', file => '/tmp/mobilito.png')
 
-Retrieve a screenshot and save it localy in one function.
+Retrieve a screenshot and save it localy in one function. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
 
 Return an aray (status code, file name). The file name is empty if the screenshot wasa not retrieved. See L<http://browshot.com/api/documentation#simple> for the list of possible status codes.
 
@@ -295,6 +295,7 @@ sub browser_create {
   $browshot->screenshot_create(url => 'http://wwww.google.com/', instance_id => 3, size => 'page')
 
 Request a screenshot. See L<http://browshot.com/api/documentation#screenshot_create> for the response format.
+Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
 
 Arguments:
 
