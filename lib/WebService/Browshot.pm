@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.8.0';
+our $VERSION = '1.9.0';
 
 =head1 NAME
 
@@ -383,6 +383,23 @@ sub screenshot_list {
 	return $self->return_reply(action => 'screenshot/list', parameters => { %args });
 }
 
+=head2 screenshot_host()
+
+  $browshot->screenshot_host(id => 12345, hosting => 'cdn')
+
+Host a screenshot or thumbnail. See L<http://browshot.com/api/documentation#screenshot_host> for the response format.
+
+Arguments:
+
+=over 4
+
+=item id
+
+Required. Screenshot ID.
+
+=back
+
+=cut
 
 sub screenshot_host {
 	my ($self, %args) 	= @_;
@@ -492,6 +509,31 @@ sub screenshot_thumbnail_file {
 	}
 }
 
+=head2 screenshot_share()
+
+  $browshot->screenshot_share(id => 12345, note => 'This is my screenshot')
+
+Share a screenshot. See L<http://browshot.com/api/documentation#screenshot_share> for the response format.
+
+Arguments:
+
+=over 4
+
+=item id
+
+Required. Screenshot ID.
+
+=back
+
+=cut
+
+sub screenshot_share {
+	my ($self, %args) 	= @_;
+	my $id				= $args{id}	|| $self->error("Missing id in screenshot_share");
+
+	return $self->return_reply(action => 'screenshot/share', parameters => { %args });
+}
+
 =head2 account_info()
 
 Return information about the user account. See L<http://browshot.com/api/documentation#account_info> for the response format.
@@ -592,6 +634,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.9.0
+
+Add C<screenshot_share> for API 1.9.
 
 =item 1.8.0
 

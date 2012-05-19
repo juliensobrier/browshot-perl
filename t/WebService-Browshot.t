@@ -5,7 +5,7 @@
 
 use Data::Dumper;
 
-use Test::More tests => 174;
+use Test::More tests => 175;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -17,7 +17,7 @@ my $browshot = WebService::Browshot->new(
 # 	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.8', "API version");
+is($browshot->api_version(), '1.9', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
@@ -324,11 +324,16 @@ SKIP: {
 # 	is( $thumbnail, '', 							"Missing screenshot ID");
 
 
+	# Screenshot share
+	my $share = $browshot->screenshot_share(id => 1);
+	is( $share->{status}, 'error', 					"Incorrect screenshot ID");
+
+
 	# Hosting disabled for this account
 	my $hosting = $browshot->screenshot_host(id => $screenshot_id);
 	is( $hosting->{status}, 'error', 					"Default hosting option not enabled for this account");
 
-	$hosting = $browshot->screenshot_host(id => $screenshot_id), hosting => 's3';
+	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 's3');
 	is( $hosting->{status}, 'error', 					"S3 hosting option not enabled for this account");
 
 	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 's3', bucket => 'mine');
