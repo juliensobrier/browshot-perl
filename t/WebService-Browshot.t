@@ -5,7 +5,7 @@
 
 use Data::Dumper;
 
-use Test::More tests => 175;
+use Test::More;
 use lib '../lib/';
 BEGIN { use_ok( 'WebService::Browshot' ); }
 require_ok( 'WebService::Browshot' );
@@ -374,4 +374,4 @@ SKIP: {
 	ok( exists $account->{error}, 				"Missing key");
 }
 
-# done_testing(138);
+done_testing;
