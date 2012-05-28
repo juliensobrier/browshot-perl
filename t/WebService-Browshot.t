@@ -317,6 +317,7 @@ SKIP: {
 
 		my $thumbnail = $browshot->screenshot_thumbnail(id => $screenshot_id, width => 640);
 		ok( $thumbnail ne '', 						"Thumbnail was successful");
+		ok( length($thumbnail) > 100,				"Thumbnail was successful");
 		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file");
 	}
 

@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.9.1';
+our $VERSION = '1.9.2';
 
 =head1 NAME
 
@@ -444,7 +444,7 @@ sub screenshot_thumbnail {
 	my $id				= $args{id}	|| $self->error("Missing id in screenshot_thumbnail");
 
 
-	my $url	= $self->make_url(action => 'screenshot/thumbnail', %args);
+	my $url	= $self->make_url(action => 'screenshot/thumbnail', parameters => { %args });
 	my $res =  $self->{_ua}->get($url);
 
 	if ($res->is_success) {
