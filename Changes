@@ -61,3 +61,6 @@ Revision history for Perl extension WebService::Browshot.
 1.9.2 Sat May 26 21:46:00
 	- Fix text plan (Thank you to contributor wreis)
 	- Fix screenshot_thumbnail
+
+1.9.3 Mon Jun 18 21:18:00
+	- Keep backward compatiblity for screenshot_thumbnail.

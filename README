@@ -1,5 +1,5 @@
-WebService::Browshot version 1.9.2
-================================
+WebService::Browshot
+====================
 
 Perl extension for Browshot http://www.browshot.com/, a web service to create website screenshots in real-time.
 

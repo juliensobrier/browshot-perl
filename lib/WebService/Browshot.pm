@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.9.2';
+our $VERSION = '1.9.3';
 
 =head1 NAME
 
@@ -441,7 +441,15 @@ Optional. Maximum height of the thumbnail.
 =cut
 sub screenshot_thumbnail {
 	my ($self, %args) 	= @_;
-	my $id				= $args{id}	|| $self->error("Missing id in screenshot_thumbnail");
+
+	if (exists($args{url}) && $args{url} =~ /image\/(\d+)\?/i && ! exists($args{id})) {
+		# get ID from url
+		$args{id} = $1;
+	}
+	elsif(! exists($args{id}) ) {
+		$self->error("Missing id and url in screenshot_thumbnail");
+		return '';
+	}
 
 
 	my $url	= $self->make_url(action => 'screenshot/thumbnail', parameters => { %args });
@@ -635,6 +643,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.9.3
+
+Keep backward compatiblity for C<screenshot_thumbnail>.
 
 =item 1.9.0
 

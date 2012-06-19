@@ -13,7 +13,7 @@ require_ok( 'WebService::Browshot' );
 
 my $browshot = WebService::Browshot->new(
 	key		=> 'vPTtKKLBtPUNxVwwfEKlVvekuxHyTXyi', # test1
-# 	base	=> 'http://127.0.0.1:3000/api/v1/',
+# 	base	=> 'http://api.browshot.com/api/v1/',
 # 	debug	=> 1,
 );
 
@@ -313,12 +313,19 @@ SKIP: {
 	}
 
 	SKIP: {
-		skip "No finished screenshot found", 1 if ($screenshot_id == 0);
+		skip "No finished screenshot found", 6 if ($screenshot_id == 0);
 
 		my $thumbnail = $browshot->screenshot_thumbnail(id => $screenshot_id, width => 640);
-		ok( $thumbnail ne '', 						"Thumbnail was successful");
-		ok( length($thumbnail) > 100,				"Thumbnail was successful");
+		ok( $thumbnail ne '', 						"Thumbnail was successful (not empty)");
+		ok( length($thumbnail) > 100,				"Thumbnail was successful (size > 100)");
 		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file");
+
+
+		# verify backward compatibility
+		$thumbnail = $browshot->screenshot_thumbnail(url => $screenshots->{$screenshot_id}->{screenshot_url}, width => 640);
+		ok( $thumbnail ne '', 						"Thumbnail was successful (not empty - url)");
+		ok( length($thumbnail) > 100,				"Thumbnail was successful (size > 100 - url)");
+		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file (url)");
 	}
 
 # 	my $thumbnail = $browshot->screenshot_thumbnail(id => -1, width => 640);
