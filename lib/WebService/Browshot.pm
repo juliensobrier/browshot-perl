@@ -583,7 +583,7 @@ sub return_reply {
 		return $info;
 	}
 	else {
-		$self->error("Server sent back an error: " . $res->status_code);
+		$self->error("Server sent back an error: " . $res->code);
 		return $self->generic_error($res->as_string);
 	}
 }
