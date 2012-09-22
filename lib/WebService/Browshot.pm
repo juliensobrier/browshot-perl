@@ -445,6 +445,14 @@ sub screenshot_thumbnail {
 	if (exists($args{url}) && $args{url} =~ /image\/(\d+)\?/i && ! exists($args{id})) {
 		# get ID from url
 		$args{id} = $1;
+
+		if ($args{url}  =~ /&width=(\d+)\?/i && ! exists($args{width})) {
+				$args{width} = $1;
+		}
+		if ($args{url}  =~ /&height=(\d+)\?/i && ! exists($args{height})) {
+				$args{height} = $1;
+		}
+		
 	}
 	elsif(! exists($args{id}) ) {
 		$self->error("Missing id and url in screenshot_thumbnail");
