@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.9.3';
+our $VERSION = '1.9.4';
 
 =head1 NAME
 
@@ -651,6 +651,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.9.4
+
+Fix status code in error messages.
 
 =item 1.9.3
 

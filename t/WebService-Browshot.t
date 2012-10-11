@@ -374,12 +374,12 @@ SKIP: {
 
 	# Error tests
 	$browshot = WebService::Browshot->new(
-		key		=> '', # test1
+		key		=> 'test1',
 	# 	debug	=> 1,
 	);
 
 	$account = $browshot->account_info();
-	ok( exists $account->{error}, 				"Missing key");
+	ok( exists $account->{error}, 				"Invalid key");
 }
 
 done_testing;
