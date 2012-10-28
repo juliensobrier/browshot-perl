@@ -8,7 +8,7 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.9.4';
+our $VERSION = '1.10.0';
 
 =head1 NAME
 
@@ -540,6 +540,10 @@ Arguments:
 
 Required. Screenshot ID.
 
+=item note
+
+Optional. Public note to add to the screenshot.
+
 =back
 
 =cut
@@ -550,6 +554,37 @@ sub screenshot_share {
 
 	return $self->return_reply(action => 'screenshot/share', parameters => { %args });
 }
+
+
+=head2 screenshot_delete()
+
+  $browshot->screenshot_delete(id => 12345, data => 'url,metadata')
+
+Delete delais of a screenshot. See L<http://browshot.com/api/documentation#screenshot_delete> for the response format.
+
+Arguments:
+
+=over 4
+
+=item id
+
+Required. Screenshot ID.
+
+=item data
+
+Optional. Information to delete.
+
+=back
+
+=cut
+
+sub screenshot_delete {
+	my ($self, %args) 	= @_;
+	my $id				= $args{id}	|| $self->error("Missing id in screenshot_delete");
+
+	return $self->return_reply(action => 'screenshot/delete', parameters => { %args });
+}
+
 
 =head2 account_info()
 
@@ -651,6 +686,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.10
+
+Add C<screenshot_delete> for API 1.10.
 
 =item 1.9.4
 

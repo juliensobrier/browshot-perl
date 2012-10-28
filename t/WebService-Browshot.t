@@ -17,7 +17,7 @@ my $browshot = WebService::Browshot->new(
 # 	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.9', "API version");
+is($browshot->api_version(), '1.10', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
@@ -319,6 +319,17 @@ SKIP: {
 		ok( $thumbnail ne '', 						"Thumbnail was successful (not empty)");
 		ok( length($thumbnail) > 100,				"Thumbnail was successful (size > 100)");
 		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file");
+
+		# crop 300x300
+		$thumbnail = $browshot->screenshot_thumbnail(id => $screenshot_id, right => 300, bottom => 300);
+		ok( $thumbnail ne '', 						"Thumbnail (1) was successful (not empty)");
+		ok( length($thumbnail) > 100,				"Thumbnail (1) was successful (size > 100)");
+		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file (1)");
+
+		$thumbnail = $browshot->screenshot_thumbnail(id => $screenshot_id, right => 300, bottom => 300, width => 150);
+		ok( $thumbnail ne '', 						"Thumbnail (2) was successful (not empty)");
+		ok( length($thumbnail) > 100,				"Thumbnail (2) was successful (size > 100)");
+		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file (2)");
 
 
 		# verify backward compatibility
