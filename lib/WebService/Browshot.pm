@@ -560,7 +560,7 @@ sub screenshot_share {
 
   $browshot->screenshot_delete(id => 12345, data => 'url,metadata')
 
-Delete delais of a screenshot. See L<http://browshot.com/api/documentation#screenshot_delete> for the response format.
+Delete details of a screenshot. See L<http://browshot.com/api/documentation#screenshot_delete> for the response format.
 
 Arguments:
 
