@@ -62,6 +62,10 @@ Required.  API key.
 
 Optional. Set to 1 to print debug output to the standard output. 0 (disabled) by default.
 
+=item timeout
+
+Optional. Set the request timeout - in seconds - against the API. Defaults to 90s.
+
 =back
 
 =cut
@@ -70,7 +74,7 @@ sub new {
   	my ($self, %args) = @_;
 
 	my $ua = LWP::UserAgent->new();
-	$ua->timeout(90);
+	$ua->timeout($args{'timeout'} || 90);
 	$ua->env_proxy;
 	$ua->max_redirect(32); # for the simple API only
 	$ua->agent("WebService::Browshot $VERSION");
