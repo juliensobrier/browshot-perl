@@ -8,7 +8,13 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
-our $VERSION = '1.10.0';
+use IO::Socket::SSL;
+IO::Socket::SSL::set_ctx_defaults( 
+     SSL_verifycn_scheme => 'www', 
+     SSL_verify_mode => 0,
+);
+
+our $VERSION = '1.10.1';
 
 =head1 NAME
 
@@ -63,6 +69,8 @@ Required.  API key.
 Optional. Set to 1 to print debug output to the standard output. 0 (disabled) by default.
 
 =back
+
+C<last_error> contasin the last error message, it is NEVER reset, i.e last_error may not be empty after a succesfull API call if an earlier call failed.
 
 =cut
 
