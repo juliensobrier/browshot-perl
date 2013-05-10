@@ -14,7 +14,7 @@ IO::Socket::SSL::set_ctx_defaults(
      SSL_verify_mode => 0,
 );
 
-our $VERSION = '1.10.1';
+our $VERSION = '1.11.0';
 
 =head1 NAME
 
@@ -698,6 +698,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.11
+
+Compatible with API 1.11. Option HTTP timeout.
 
 =item 1.10
 

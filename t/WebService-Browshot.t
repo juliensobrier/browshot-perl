@@ -17,7 +17,7 @@ my $browshot = WebService::Browshot->new(
 # 	debug	=> 1,
 );
 
-is($browshot->api_version(), '1.10', "API version");
+is($browshot->api_version(), '1.11', "API version");
 
 SKIP: {
 	# Check access to https://browshot.com/
