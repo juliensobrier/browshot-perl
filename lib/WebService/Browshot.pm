@@ -412,7 +412,7 @@ Required. Screenshot ID.
 
 sub screenshot_host {
 	my ($self, %args) 	= @_;
-	my $id				= $args{id}	|| $self->error("Missing id in screenshot_host");
+	my $id			= $args{id}	|| $self->error("Missing id in screenshot_host");
 
 	return $self->return_reply(action => 'screenshot/host', parameters => { %args });
 }
