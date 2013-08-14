@@ -14,7 +14,7 @@ IO::Socket::SSL::set_ctx_defaults(
      SSL_verify_mode => 0,
 );
 
-our $VERSION = '1.11.0';
+our $VERSION = '1.12';
 
 =head1 NAME
 
@@ -366,7 +366,7 @@ Required. Screenshot ID.
 
 sub screenshot_info {
 	my ($self, %args) 	= @_;
-	my $id				= $args{id}	|| $self->error("Missing id in screenshot_info");
+	my $id			= $args{id}	|| $self->error("Missing id in screenshot_info");
 
 
 	return $self->return_reply(action => 'screenshot/info', parameters => { %args });
@@ -394,6 +394,31 @@ sub screenshot_list {
 	my ($self, %args) 	= @_;
 
 	return $self->return_reply(action => 'screenshot/list', parameters => { %args });
+}
+
+=head2 screenshot_search()
+
+  $browshot->screenshot_search(url => 'google.com')
+
+Get details about screenshots requested. See L<http://browshot.com/api/documentation#screenshot_search> for the response format.
+
+Arguments:
+
+=over 4
+
+=item url
+
+Required. URL string to look for.
+
+=back
+
+=cut
+
+sub screenshot_search {
+	my ($self, %args) 	= @_;
+	my $url			= $args{url}	|| $self->error("Missing id in screenshot_search");
+
+	return $self->return_reply(action => 'screenshot/search', parameters => { %args });
 }
 
 =head2 screenshot_host()
@@ -647,7 +672,15 @@ sub return_reply {
 	}
 	else {
 		$self->error("Server sent back an error: " . $res->code);
-		return $self->generic_error($res->as_string);
+		my $info;
+		eval {
+			$info = decode_json($res->decoded_content);
+		};
+		if ($@) {
+		  return $self->generic_error($res->as_string);
+		}
+
+		return $info;
 	}
 }
 
@@ -699,9 +732,17 @@ sub generic_error {
 
 =over 4
 
+=item 1.12
+
+Add C<screenshot_search> for API 1.12.
+
+=item 1.11.1
+
+Return Browshot response in case of error if the reply is valid JSON.
+
 =item 1.11
 
-Compatible with API 1.11. Option HTTP timeout.
+Compatible with API 1.11. Optional HTTP timeout.
 
 =item 1.10
 

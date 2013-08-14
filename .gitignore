@@ -1,3 +1,6 @@
+*.old
+*.tar
+*.tar.gz
 .svn
 *~
 blib/
