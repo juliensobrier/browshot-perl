@@ -20,6 +20,8 @@ my $browshot = WebService::Browshot->new(
 is($browshot->api_version(), '1.12', "API version");
 
 SKIP: {
+	skip "env BROWSHOT_REMOTE_TESTS not set", 134 if (! $ENV{BROWSHOT_REMOTE_TESTS});
+
 	# Check access to https://browshot.com/
 	my $ua = LWP::UserAgent->new();
 	$ua->timeout(60);
@@ -28,13 +30,13 @@ SKIP: {
 	my $response = $ua->get('https://browshot.com/');
 # 	print $response->as_string, "\n";
 
-    skip "Unable to access https://browshot.com/", 134 if (! $response->is_success);
+	skip "Unable to access https://browshot.com/", 134 if (! $response->is_success);
 
 	my ($code, $png) = $browshot->simple(url => 'http://mobilito.net/', cache => 60 * 60 * 24 * 365); # cached for a year
 	ok( $code == 200, 					"Screenshot should be succesful: $code");
 	ok( length($png) > 0, 					"Screenshot should be succesful");
 
-    my $instances = $browshot->instance_list();
+	my $instances = $browshot->instance_list();
 	
 	ok( exists $instances->{free}, 				"List of free instances available");
 	ok( exists $instances->{shared}, 			"List of shared instances available");

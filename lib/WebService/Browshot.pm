@@ -8,13 +8,15 @@ use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
 
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 use IO::Socket::SSL;
 IO::Socket::SSL::set_ctx_defaults( 
      SSL_verifycn_scheme => 'www', 
      SSL_verify_mode => 0,
+     verify_mode => 0,
 );
 
-our $VERSION = '1.12';
+our $VERSION = '1.12.1';
 
 =head1 NAME
 
@@ -86,6 +88,7 @@ sub new {
 	$ua->env_proxy;
 	$ua->max_redirect(32); # for the simple API only
 	$ua->agent("WebService::Browshot $VERSION");
+	$ua->ssl_opts( verify_hostnames => 0 );
 
   	my $browshot = {	
 		_key	=> $args{key}	|| '',
