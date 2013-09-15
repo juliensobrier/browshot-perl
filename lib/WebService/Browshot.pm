@@ -635,7 +635,7 @@ Return information about the user account. See L<http://browshot.com/api/documen
 sub account_info {
 	my ($self, %args) = @_;
 	
-	return $self->return_reply(action => 'account/info');
+	return $self->return_reply(action => 'account/info', parameters => { %args });
 }
 
 

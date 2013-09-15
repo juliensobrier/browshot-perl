@@ -87,4 +87,5 @@ Revision history for Perl extension WebService::Browshot.
 	- add method screenshot_search
 
 1.12.1 Tue Sep 10 2013 20:37:00
-	- disable remot etsts by defautl. "export BROWSHOT_REMOTE_TESTS=1" to enable API tests.
+	- disable remote tests by defautl. "export BROWSHOT_REMOTE_TESTS=1" to enable API tests.
+	- Handle new arguments for account_info

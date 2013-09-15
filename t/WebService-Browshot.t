@@ -232,17 +232,17 @@ SKIP: {
 		ok( exists $screenshot2->{finished}, 		"Screenshot finished is present");
 		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
 
-
-		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 3);
-		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
-		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
-		ok( exists $screenshot2->{response_code}, 	"Screenshot response_code is present");
-		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
-		ok( exists $screenshot2->{started}, 		"Screenshot started is present");
-		ok( exists $screenshot2->{finished}, 		"Screenshot finished is present");
-		ok( exists $screenshot2->{iframes}, 		"Screenshot images are present");
-		ok( exists $screenshot2->{scripts}, 		"Screenshot scripts are present");
-		ok( exists $screenshot2->{iframes}, 		"Screenshot iframes are present");
+# 		API change: details => 3 must be explicit with the screenshot request
+# 		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 3);
+# 		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
+# 		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
+# 		ok( exists $screenshot2->{response_code}, 	"Screenshot response_code is present");
+# 		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
+# 		ok( exists $screenshot2->{started}, 		"Screenshot started is present");
+# 		ok( exists $screenshot2->{finished}, 		"Screenshot finished is present");
+# 		ok( exists $screenshot2->{iframes}, 		"Screenshot images are present");
+# 		ok( exists $screenshot2->{scripts}, 		"Screenshot scripts are present");
+# 		ok( exists $screenshot2->{iframes}, 		"Screenshot iframes are present");
 	}
 
 	my $screenshots;
