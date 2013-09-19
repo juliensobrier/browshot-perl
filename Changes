@@ -71,7 +71,7 @@ Revision history for Perl extension WebService::Browshot.
 
 1.10.0 Sun Oct 28 2012 14:31:00
  	- API 1.10
-	- add method screenshot_delete
+	- Add method screenshot_delete
 
 1.10.1 Thu Apr 25 2013 22:32:00
  	- Fix SSL warning
@@ -84,8 +84,11 @@ Revision history for Perl extension WebService::Browshot.
 
 1.12   Mon Aug 12 2013 21:07:00
  	- API 1.12
-	- add method screenshot_search
+	- Add method screenshot_search
 
 1.12.1 Tue Sep 10 2013 20:37:00
-	- disable remote tests by defautl. "export BROWSHOT_REMOTE_TESTS=1" to enable API tests.
+	- Disable remote tests by defautl. "export BROWSHOT_REMOTE_TESTS=1" to enable API tests.
 	- Handle new arguments for account_info
+
+1.12.2 Wed Sep 18 2013 21:37:00
+	- Fix spelling mistakes in the documentation.

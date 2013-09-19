@@ -16,7 +16,7 @@ IO::Socket::SSL::set_ctx_defaults(
      verify_mode => 0,
 );
 
-our $VERSION = '1.12.1';
+our $VERSION = '1.12.2';
 
 =head1 NAME
 
@@ -76,7 +76,7 @@ Optional. Set the request timeout - in seconds - against the API. Defaults to 90
 
 =back
 
-C<last_error> contasin the last error message, it is NEVER reset, i.e last_error may not be empty after a succesfull API call if an earlier call failed.
+C<last_error> contains the last error message, it is NEVER reset, i.e last_error may not be empty after a successful API call if an earlier call failed.
 
 =cut
 
@@ -162,7 +162,7 @@ sub simple {
 
    $browshot->simple_file(url => 'http://mobilito.net', file => '/tmp/mobilito.png')
 
-Retrieve a screenshot and save it locally in one function. Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
+Retrieve a screenshot and save it locally in one function. Note: by default, screenshots are cached for 24 hours. You can tune this value with the cache=X parameter.
 
 Return an array (status code, file name). The file name is empty if the screenshot was not retrieved. See L<http://browshot.com/api/documentation#simple> for the list of possible status codes.
 
@@ -310,7 +310,7 @@ sub browser_create {
   $browshot->screenshot_create(url => 'http://wwww.google.com/', instance_id => 3, size => 'page')
 
 Request a screenshot. See L<http://browshot.com/api/documentation#screenshot_create> for the response format.
-Note: by default, screenshots are cached for 24 hours. You can tune this valu with the cache=X parameter.
+Note: by default, screenshots are cached for 24 hours. You can tune this value with the cache=X parameter.
 
 Arguments:
 
@@ -803,7 +803,7 @@ Julien Sobrier, E<lt>julien@sobrier.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012 by Julien Sobrier
+Copyright (C) 2013 by Julien Sobrier
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
