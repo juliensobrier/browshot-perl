@@ -1,8 +1,3 @@
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl WebService-Browshot.t'
-
-#########################
-
 use Data::Dumper;
 
 use Test::More;
@@ -13,14 +8,14 @@ require_ok( 'WebService::Browshot' );
 
 my $browshot = WebService::Browshot->new(
 	key	=> 'vPTtKKLBtPUNxVwwfEKlVvekuxHyTXyi', # test1
-# 	base	=> 'http://api.browshot.com/api/v1/',
+# 	base	=> 'http://127.0.0.1:3000/api/v1/',
 	debug	=> 0,
 );
 
-is($browshot->api_version(), '1.12', "API version");
+is($browshot->api_version(), '1.13', "API version");
 
 SKIP: {
-	skip "env BROWSHOT_REMOTE_TESTS not set", 134 if (! $ENV{BROWSHOT_REMOTE_TESTS});
+	skip "env BROWSHOT_REMOTE_TESTS not set", 135 if (! $ENV{BROWSHOT_REMOTE_TESTS});
 
 	# Check access to https://browshot.com/
 	my $ua = LWP::UserAgent->new();
@@ -360,6 +355,14 @@ SKIP: {
 		is ( substr($thumbnail, 1, 3), 'PNG',		"Valid PNG file (url)");
 	}
 
+	SKIP: {
+		skip "No finished screenshot found", 1 if ($screenshot_id == 0);
+
+		my $html = $browshot->screenshot_html(id => $screenshot_id);
+		is ( $html, '',				"No HTML retrieved");
+		print $html, "\n" if ($html ne '');
+	}
+
 # 	my $thumbnail = $browshot->screenshot_thumbnail(id => -1, width => 640);
 # 	is( $thumbnail, '', 							"Missing screenshot ID");
 
@@ -368,6 +371,16 @@ SKIP: {
 	my $share = $browshot->screenshot_share(id => 1);
 	is( $share->{status}, 'error', 				"Incorrect screenshot ID");
 
+	# Multiple screenshots - Cannot be tested with Test user
+# 	$screenshots = $browshot->screenshot_multiple(urls => ['http://mobilito.net/', 'http://www.google.com/'], instances => [12, 72]);
+# 	my $screenshot_id = 0;
+# 	foreach my $key (keys %$screenshots) {
+# 		$screenshot_id = $key;
+# 		last;
+# 	}
+# 	ok( $screenshot_id > 0, 						"Screenshot ID is correct");
+# 	ok( exists $screenshot->{id}, 						"Screenshot ID is present");
+# 	ok( exists $screenshot->{status}, 					"Screenshot status is present");
 
 	# Hosting disabled for this account
 	my $hosting = $browshot->screenshot_host(id => $screenshot_id);
@@ -395,7 +408,7 @@ SKIP: {
 	is( $account->{balance}, 0, 				"Balance is empty");
 	ok( exists $account->{active}, 				"Account active is present");
 	is( $account->{active}, 1, 				"Account is active");
-	ok( exists $account->{instances}, 			"Account instances is present");
+# 	ok( exists $account->{instances}, 			"Account instances is present"); # not present for details=1
 	ok( exists $account->{free_screenshots_left}, 		"Free screenshots is present");
 	ok( $account->{free_screenshots_left} > 0,		"Free screenshots left");
 	is( $account->{private_instances}, 0, 			"Private instances disabled");

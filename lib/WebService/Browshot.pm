@@ -16,7 +16,7 @@ IO::Socket::SSL::set_ctx_defaults(
      verify_mode => 0,
 );
 
-our $VERSION = '1.12.2';
+our $VERSION = '1.13.0';
 
 =head1 NAME
 
@@ -620,9 +620,64 @@ Optional. Information to delete.
 
 sub screenshot_delete {
 	my ($self, %args) 	= @_;
-	my $id				= $args{id}	|| $self->error("Missing id in screenshot_delete");
+	my $id			= $args{id}	|| $self->error("Missing id in screenshot_delete");
 
 	return $self->return_reply(action => 'screenshot/delete', parameters => { %args });
+}
+
+=head2 screenshot_html()
+
+  $browshot->screenshot_html(id => 12345)
+
+Get the HTML code of the rendered page. See L<http://browshot.com/api/documentation#screenshot_html> for the response format.
+
+Arguments:
+
+=over 4
+
+=item id
+
+Required. Screenshot ID.
+
+=back
+
+=cut
+
+sub screenshot_html {
+	my ($self, %args) 	= @_;
+	my $id			= $args{id}	|| $self->error("Missing id in screenshot_html");
+
+	return $self->return_string(action => 'screenshot/html', parameters => { %args });
+}
+
+=head2 screenshot_multiple()
+
+  $browshot->screenshot_multiple(urls => ['http://mobilito.net/'], instances => [22, 30])
+
+Request multiple screenshots. See L<http://browshot.com/api/documentation#screenshot_multiple> for the response format.
+
+Arguments:
+
+=over 4
+
+=item urls
+
+Required. One or more URLs.
+
+=item instances
+
+Required. One or more instance_id.
+
+=back
+
+=cut
+
+sub screenshot_multiple {
+	my ($self, %args) 	= @_;
+	my $urls		= $args{urls}		|| $self->error("Missing urls in screenshot_multiple");
+	my $instances		= $args{instances}	|| $self->error("Missing instances in screenshot_multiple");
+
+	return $self->return_reply(action => 'screenshot/multiple', parameters => { %args });
 }
 
 
@@ -641,10 +696,8 @@ sub account_info {
 
 # Private methods
 
-sub return_reply {
+sub return_string {
 	my ($self, %args) 	= @_;
-# 	my $action			= $args{action};
-# 	my $parameters		= $args{parameters};
 
 	my $url	= $self->make_url(%args);
 	
@@ -661,41 +714,54 @@ sub return_reply {
 	}
 	until($try < $self->{_retry} && defined $@);
 
-	if ($res->is_success) {
-		my $info;
-		eval {
-			$info = decode_json($res->decoded_content);
-		};
-		if ($@) {
-			$self->error("Invalid server response: " . $@);
-			return $self->generic_error($@);
-		}
-
-		return $info;
-	}
-	else {
+	if (! $res->is_success) {
 		$self->error("Server sent back an error: " . $res->code);
-		my $info;
-		eval {
-			$info = decode_json($res->decoded_content);
-		};
-		if ($@) {
-		  return $self->generic_error($res->as_string);
-		}
-
-		return $info;
 	}
+  
+	return $res->decoded_content;
+}
+
+sub return_reply {
+	my ($self, %args) 	= @_;
+
+	my $content = $self->return_string(%args);
+
+	my $info;
+	eval {
+		$info = decode_json($content);
+	};
+	if ($@) {
+		$self->error("Invalid server response: " . $@);
+		return $self->generic_error($@);
+	}
+
+	return $info;
 }
 
 sub make_url {
 	my ($self, %args) 	= @_;
-	my $action			= $args{action}		|| '';
+	my $action		= $args{action}		|| '';
 	my $parameters		= $args{parameters}	|| { };
 
 	my $url = $self->{_base} . "$action?key=" . uri_encode($self->{_key}, 1);
 
+
+	if (exists $parameters->{urls}) {
+	  foreach my $uri (@{ $parameters->{urls} }) {
+	    $url .= '&url=' . uri_encode($uri, 1);
+	  }
+	  delete  $parameters->{urls};
+	}
+
+	if (exists $parameters->{instances}) {
+	  foreach my $instance_id (@{ $parameters->{instances} }) {
+	    $url .= '&instance_id=' . uri_encode($instance_id, 1);
+	  }
+	  delete  $parameters->{instances};
+	}
+
 	foreach my $key (keys %$parameters) {
-		$url .= '&' . uri_encode($key) . '=' . uri_encode($parameters->{$key}, 1) if (defined $parameters->{$key});
+	  $url .= '&' . uri_encode($key) . '=' . uri_encode($parameters->{$key}, 1) if (defined $parameters->{$key});
 	}
 
 	$self->info($url);
@@ -706,7 +772,7 @@ sub info {
 	my ($self, $message) = @_;
 
 	if ($self->{_debug}) {
-		print $message, "\n";
+	  print $message, "\n";
 	}
 
 	return '';
@@ -734,6 +800,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.13.0
+
+Add C<screenshot_html> and C<screenshot_multiple> for API 1.13.
 
 =item 1.12
 
