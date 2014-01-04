@@ -12,7 +12,7 @@ my $browshot = WebService::Browshot->new(
 	debug	=> 0,
 );
 
-is($browshot->api_version(), '1.13', "API version");
+is($browshot->api_version(), '1.14', "API version");
 
 SKIP: {
 	skip "env BROWSHOT_REMOTE_TESTS not set", 135 if (! $ENV{BROWSHOT_REMOTE_TESTS});
@@ -27,7 +27,7 @@ SKIP: {
 
 	skip "Unable to access https://browshot.com/", 134 if (! $response->is_success);
 
-	my ($code, $png) = $browshot->simple(url => 'http://mobilito.net/', cache => 60 * 60 * 24 * 365); # cached for a year
+	my ($code, $png) = $browshot->simple(url => 'http://mobilito.net/', cache => 60 * 60 * 24 * 365, instance_id => 12); # cached for a year
 	ok( $code == 200, 					"Screenshot should be succesful: $code");
 	ok( length($png) > 0, 					"Screenshot should be succesful");
 
@@ -59,17 +59,17 @@ SKIP: {
 
 
 	my $instance = $browshot->instance_info(id => $free->{id});
-	ok( $free->{id} == $instance->{id}, 										"Correct instance ID");
-	ok( $free->{width} == $instance->{width}, 									"Correct instance width");
-	ok( $free->{height} == $instance->{height}, 								"Correct instance height");
-	ok( $free->{load} == $instance->{load}, 									"Correct instance load");
-	ok( $free->{browser}->{id} == $instance->{browser}->{id}, 					"Correct instance browser ID");
-	ok( $free->{browser}->{name} eq $instance->{browser}->{name}, 				"Correct instance browser ID");
+	ok( $free->{id} == $instance->{id}, 						"Correct instance ID");
+	ok( $free->{width} == $instance->{width}, 					"Correct instance width");
+	ok( $free->{height} == $instance->{height}, 					"Correct instance height");
+# 	ok( $free->{load} == $instance->{load}, 					"Correct instance load"); # this can change between 2 calls
+	ok( $free->{browser}->{id} == $instance->{browser}->{id}, 			"Correct instance browser ID");
+	ok( $free->{browser}->{name} eq $instance->{browser}->{name}, 			"Correct instance browser ID");
 	ok( $free->{browser}->{javascript} == $instance->{browser}->{javascript}, 	"Correct instance browser javascript");
-	ok( $free->{browser}->{flash} == $instance->{browser}->{flash}, 			"Correct instance browser javascript");
-	ok( $free->{browser}->{mobile} == $instance->{browser}->{mobile}, 			"Correct instance browser javascript");
-	ok( $free->{type} eq $instance->{type}, 									"Correct instance type");
-	ok( $free->{screenshot_cost} == $instance->{screenshot_cost}, 				"Correct instance screenshot_cost");
+	ok( $free->{browser}->{flash} == $instance->{browser}->{flash}, 		"Correct instance browser javascript");
+	ok( $free->{browser}->{mobile} == $instance->{browser}->{mobile}, 		"Correct instance browser javascript");
+	ok( $free->{type} eq $instance->{type}, 					"Correct instance type");
+	ok( $free->{screenshot_cost} == $instance->{screenshot_cost}, 			"Correct instance screenshot_cost");
 
 	my $missing = $browshot->instance_info(id => -1);
 	ok( exists $missing->{error}, 					"Instance was not found");
@@ -195,18 +195,18 @@ SKIP: {
 		ok( exists $screenshot2->{response_code}, 	"Screenshot response_code is present");
 		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
 		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
-		ok( exists $screenshot2->{scale}, 			"Screenshot scale is present");
-		ok( exists $screenshot2->{cost}, 			"Screenshot cost is present");
+		ok( exists $screenshot2->{scale}, 		"Screenshot scale is present");
+		ok( exists $screenshot2->{cost}, 		"Screenshot cost is present");
 		ok( ! exists $screenshot2->{images}, 		"Screenshot images are NOT present");
 
 
 		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 0);
 		ok( exists $screenshot2->{screenshot_url}, 	"Screenshot screenshot_url is present");
 		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
-		ok( ! exists $screenshot2->{response_code}, "Screenshot response_code is NOT present");
-		ok( ! exists $screenshot2->{content_type}, 	"Screenshot content_type is NOT present");
-		ok( ! exists $screenshot2->{finished}, 		"Screenshot finished is NOT present");
-		ok( ! exists $screenshot2->{images}, 		"Screenshot images are NOT present");
+# 		ok( ! exists $screenshot2->{response_code}, 	"Screenshot response_code is present");
+# 		ok( ! exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
+# 		ok( ! exists $screenshot2->{finished}, 		"Screenshot finished is present");
+# 		ok( ! exists $screenshot2->{images}, 		"Screenshot images are present");
 		
 
 		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 1);
@@ -214,8 +214,8 @@ SKIP: {
 		ok( exists $screenshot2->{final_url}, 		"Screenshot final_url is present");
 		ok( exists $screenshot2->{response_code}, "Screenshot response_code is present");
 		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
-		ok( ! exists $screenshot2->{started}, 		"Screenshot started is NOT present");
-		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
+# 		ok( ! exists $screenshot2->{started}, 		"Screenshot started is NOT present");
+# 		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
 
 
 		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 2);
@@ -225,7 +225,7 @@ SKIP: {
 		ok( exists $screenshot2->{content_type}, 	"Screenshot content_type is present");
 		ok( exists $screenshot2->{started}, 		"Screenshot started is present");
 		ok( exists $screenshot2->{finished}, 		"Screenshot finished is present");
-		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
+# 		ok( ! exists $screenshot2->{iframes}, 		"Screenshot images are NOT present");
 
 # 		API change: details => 3 must be explicit with the screenshot request
 # 		$screenshot2 = $browshot->screenshot_info(id => $screenshot->{id}, details => 3);
@@ -293,10 +293,10 @@ SKIP: {
 
 	ok( exists $screenshot->{id}, 				"Screenshot ID is present");
 	ok( exists $screenshot->{final_url}, 			"Screenshot final_url is present");
-	ok( ! exists $screenshot->{response_code}, 		"Screenshot response_code is NOT present");
-	ok( ! exists $screenshot->{content_type}, 		"Screenshot content_type is NOT present");
-	ok( ! exists $screenshot->{finished}, 			"Screenshot finished is NOT present");
-	ok( ! exists $screenshot->{images}, 			"Screenshot images are NOT present");
+# 	ok( ! exists $screenshot->{response_code}, 		"Screenshot response_code is NOT present");
+# 	ok( ! exists $screenshot->{content_type}, 		"Screenshot content_type is NOT present");
+# 	ok( ! exists $screenshot->{finished}, 			"Screenshot finished is NOT present");
+# 	ok( ! exists $screenshot->{images}, 			"Screenshot images are NOT present");
 
 
 	# search
@@ -383,24 +383,19 @@ SKIP: {
 # 	ok( exists $screenshot->{status}, 					"Screenshot status is present");
 
 	# Hosting disabled for this account
-	my $hosting = $browshot->screenshot_host(id => $screenshot_id);
-	is( $hosting->{status}, 'error', 					"Default hosting option not enabled for this account");
-
-	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 's3');
-	is( $hosting->{status}, 'error', 					"S3 hosting option not enabled for this account");
-
-	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 's3', bucket => 'mine');
-	is( $hosting->{status}, 'error', 					"S3 hosting option not enabled for this account");
-
-	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'cdn');
-	is( $hosting->{status}, 'error', 					"CDN hosting option not enabled for this account");
-
-	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'browshot');
+	my $hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'browshot');
 	is( $hosting->{status}, 'error', 					"Browshot hosting option not enabled for this account");
 
 	$hosting = $browshot->screenshot_host(id => $screenshot_id, hosting => 'foobar');
-	is( $hosting->{status}, 'error', 					"CDN hosting option incorrect");
+	is( $hosting->{status}, 'error', 					"Hosting option incorrect");
 
+
+	# Batch request
+	my $batch = $browshot->batch_create();
+	is( $batch->{status}, 'error', 					"Batch request inccorect");
+
+	$batch = $browshot->batch_info(id => 1);
+	is( $batch->{status}, 'error', 					"Batch id inccorect");
 
 	# Account information
 	my $account = $browshot->account_info();
@@ -412,8 +407,6 @@ SKIP: {
 	ok( exists $account->{free_screenshots_left}, 		"Free screenshots is present");
 	ok( $account->{free_screenshots_left} > 0,		"Free screenshots left");
 	is( $account->{private_instances}, 0, 			"Private instances disabled");
-	is( $account->{hosting_s3}, 0, 				"S3 hosting disabled");
-	is( $account->{hosting_cdn}, 0, 			"CDN hosting disabled");
 	is( $account->{hosting_browshot}, 0, 			"Browshot hosting disabled");
 
 

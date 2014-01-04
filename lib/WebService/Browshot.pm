@@ -16,7 +16,7 @@ IO::Socket::SSL::set_ctx_defaults(
      verify_mode => 0,
 );
 
-our $VERSION = '1.13.0';
+our $VERSION = '1.14.0';
 
 =head1 NAME
 
@@ -674,11 +674,68 @@ Required. One or more instance_id.
 
 sub screenshot_multiple {
 	my ($self, %args) 	= @_;
-	my $urls		= $args{urls}		|| $self->error("Missing urls in screenshot_multiple");
-	my $instances		= $args{instances}	|| $self->error("Missing instances in screenshot_multiple");
+# 	my $urls		= $args{urls}		|| $self->error("Missing urls in screenshot_multiple");
+# 	my $instances		= $args{instances}	|| $self->error("Missing instances in screenshot_multiple");
 
 	return $self->return_reply(action => 'screenshot/multiple', parameters => { %args });
 }
+
+
+=head2 batch_create()
+
+  $browshot->batch_create(file => '/my/file/urls.txt', instance_id => 65)
+
+Request multiple screenshots from a text file. See L<http://browshot.com/api/documentation#batch_create> for the response format.
+
+Arguments:
+
+=over 4
+
+=item file
+
+Required. Path to the text file which contains the list of URLs.
+
+=item instance_id
+
+Required. instance_id to use for all screenshots.
+
+=back
+
+=cut
+
+sub batch_create {
+	my ($self, %args) 	= @_;
+	my $file		= $args{file}		|| $self->error("Missing file in batch_create");
+	my $instance_id		= $args{instance_id}	|| $self->error("Missing instance_id} in batch_create");
+
+	return $self->return_post_reply(action => 'batch/create', parameters => { %args }, file => $file);
+}
+
+=head2 batch_info()
+
+  $browshot->batch_info(id => 5)
+
+Get information about a screenshot batch requested previously. See L<http://browshot.com/api/documentation#batch_info> for the response format.
+
+Arguments:
+
+=over 4
+
+=item id
+
+Required. Batch ID.
+
+=back
+
+=cut
+
+sub batch_info {
+	my ($self, %args) 	= @_;
+	my $id			= $args{id}	|| $self->error("Missing id in batch_info");
+
+	return $self->return_reply(action => 'batch/info', parameters => { %args });
+}
+
 
 
 =head2 account_info()
@@ -721,10 +778,60 @@ sub return_string {
 	return $res->decoded_content;
 }
 
+sub return_post_string {
+	my ($self, %args) 	= @_;
+	my $file 		= $args{'file'} || '';
+
+	delete $args{'file'};
+	my $url	= $self->make_url(%args);
+	
+	my $res;
+	my $try = 0;
+
+	do {
+		$self->info("Try $try");
+		eval {
+			$res = $self->{_ua}->post(
+			  $url,
+			  Content_Type => 'form-data',
+			  Content => [
+			    file => [$file],
+			  ]
+			);
+		};
+		$self->error($@) if ($@);
+		$try++;
+	}
+	until($try < $self->{_retry} && defined $@);
+
+	if (! $res->is_success) {
+		$self->error("Server sent back an error: " . $res->code);
+	}
+  
+	return $res->decoded_content;
+}
+
 sub return_reply {
 	my ($self, %args) 	= @_;
 
 	my $content = $self->return_string(%args);
+
+	my $info;
+	eval {
+		$info = decode_json($content);
+	};
+	if ($@) {
+		$self->error("Invalid server response: " . $@);
+		return $self->generic_error($@);
+	}
+
+	return $info;
+}
+
+sub return_post_reply {
+	my ($self, %args) 	= @_;
+
+	my $content = $self->return_post_string(%args);
 
 	my $info;
 	eval {
@@ -800,6 +907,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.14.0
+
+Add C<batch_create> and C<batch_info> for API 1.14.
 
 =item 1.13.0
 

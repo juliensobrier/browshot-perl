@@ -94,6 +94,11 @@ Revision history for Perl extension WebService::Browshot.
 	- Fix spelling mistakes in the documentation.
 
 1.13.0 Tue Oct 08 2013 20:52:00
- 	- API 1.13
+	- API 1.13
 	- Add method screenshot_html
 	- Add method screenshot_multiple
+
+1.14.0 Fri Jan 03 2014 21:48:00
+	- API 1.14
+	- Add method batch_create
+	- Add method batch_info
