@@ -102,3 +102,7 @@ Revision history for Perl extension WebService::Browshot.
 	- API 1.14
 	- Add method batch_create
 	- Add method batch_info
+
+1.14.1 Tue Dec 30 2014 20:43:00
+	- Remove deprecated API calls
+	- Update unit tests

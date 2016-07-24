@@ -16,11 +16,11 @@ IO::Socket::SSL::set_ctx_defaults(
      verify_mode => 0,
 );
 
-our $VERSION = '1.14.0';
+our $VERSION = '1.16.0';
 
 =head1 NAME
 
-WebService::Browshot - Perl extension for Browshot (L<http://www.browshot.com/>), a web service to create website screenshots.
+WebService::Browshot - Perl extension for Browshot (L<https://browshot.com/>), a web service to create screenshots of web pages.
 
 =head1 SYNOPSIS
 
@@ -186,7 +186,12 @@ Required. Local file name to write to.
 
 sub simple_file {
 	my ($self, %args) 	= @_;
-	my $file			= $args{file}	|| $self->error("Missing file in simple_file");
+	my $file		= $args{file}	|| $self->error("Missing file in simple_file");
+	
+	if (-d $file) {
+		$self->error("You must specify a file path, not a folder, to save the screenshot");
+		return (400, '');
+	}
 
 	my $url	= $self->make_url(action => 'simple', parameters => { %args });
 	my $res = $self->{_ua}->get($url);
@@ -219,18 +224,6 @@ sub instance_list {
 	return $self->return_reply(action => 'instance/list');
 }
 
-=head2 instance_create()
-
-Create a private instance. See L<http://browshot.com/api/documentation#instance_create> for the response format.
-
-=cut
-
-sub instance_create {
-	my ($self, %args) = @_;
-	
-	return $self->return_reply(action => 'instance/create', parameters => { %args });
-}
-
 =head2 instance_info()
 
    $browshot->instance_info(id => 2)
@@ -251,7 +244,7 @@ Required. Instance ID
 
 sub instance_info  {
 	my ($self, %args) 	= @_;
-	my $id				= $args{id}	|| $self->error("Missing id in instance_info");
+	my $id							= $args{id}	|| $self->error("Missing id in instance_info");
 
 	return $self->return_reply(action => 'instance/info', parameters => { id => $id });
 }
@@ -293,17 +286,6 @@ sub browser_info  {
 	return $self->return_reply(action => 'browser/info', parameters => { id => $id });
 }
 
-=head2 browser_create()
-
-Create a custom browser. See L<http://browshot.com/api/documentation#browser_create> for the response format.
-
-=cut
-
-sub browser_create {
-	my ($self, %args) = @_;
-	
-	return $self->return_reply(action => 'browser/create', parameters => { %args });
-}
 
 =head2 screenshot_create()
 
@@ -426,7 +408,7 @@ sub screenshot_search {
 
 =head2 screenshot_host()
 
-  $browshot->screenshot_host(id => 12345, hosting => 'cdn')
+  $browshot->screenshot_host(id => 12345, hosting => 'browshot')
 
 Host a screenshot or thumbnail. See L<http://browshot.com/api/documentation#screenshot_host> for the response format.
 
@@ -515,7 +497,7 @@ sub screenshot_thumbnail {
 
 =head2 screenshot_thumbnail_file()
 
-  $browshot->screenshot_thumbnail_file(url => 'https://ww.browshot.com/screenshot/image/52942?key=my_key', height => 500, file => '/tmp/google.png')
+  $browshot->screenshot_thumbnail_file(id => 123456, height => 500, file => '/tmp/google.png')
 
 Retrieve the screenshot, or a thumbnail, and save it to a file. See L<http://browshot.com/api/documentation#thumbnails> for the response format.
 
@@ -548,7 +530,7 @@ Optional. Maximum height of the thumbnail.
 =cut
 sub screenshot_thumbnail_file {
 	my ($self, %args) 	= @_;
-	my $file			= $args{file}	|| $self->error("Missing file in screenshot_thumbnail_file");
+	my $file		= $args{file}	|| $self->error("Missing file in screenshot_thumbnail_file");
 
 	my $content = $self->screenshot_thumbnail(%args);
 
@@ -908,6 +890,14 @@ sub generic_error {
 
 =over 4
 
+=item 1.16.0
+
+Check if the file is not a folder in simple_file
+
+=item 1.14.1
+
+Remove deprecated API calls.
+
 =item 1.14.0
 
 Add C<batch_create> and C<batch_info> for API 1.14.
@@ -984,7 +974,7 @@ Julien Sobrier, E<lt>julien@sobrier.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2013 by Julien Sobrier
+Copyright (C) 2015 by Julien Sobrier
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
