@@ -46,8 +46,6 @@ The source code is available on github at L<https://github.com/juliensobrier/bro
 
 =head1 METHODS
 
-=over 4
-
 =head2 new()
 
   my $browshot = WebService::Browshot->new(key => 'my_key', base => 'http://api.browshot.com/api/v1/', debug => 1]);
