@@ -7,6 +7,8 @@ use warnings;
 use LWP::UserAgent;
 use JSON;
 use URI::Encode qw(uri_encode);
+use File::Basename;
+use File::Path qw(make_path);
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 use IO::Socket::SSL;
@@ -16,7 +18,7 @@ IO::Socket::SSL::set_ctx_defaults(
      verify_mode => 0,
 );
 
-our $VERSION = '1.16.0';
+our $VERSION = '1.29.0';
 
 =head1 NAME
 
@@ -151,9 +153,9 @@ sub simple {
 	my $url	= $self->make_url(action => 'simple', parameters => { %args });
 	my $res = $self->{_ua}->get($url);
 
-# 	$self->info($res->message);
-# 	$self->info($res->request->as_string);
-# 	$self->info($res->as_string);
+	# $self->info($res->message);
+	# $self->info($res->request->as_string);
+	# $self->info($res->as_string);
 	
 	return ($res->code, $res->decoded_content);
 }
@@ -318,12 +320,12 @@ Optional. Screenshot size.
 
 sub screenshot_create {
 	my ($self, %args) 	= @_;
-# 	my $url				= $args{url}			|| $self->error("Missing url in screenshot_create");
-# 	my $instance_id		= $args{instance_id};
-# 	my $screen			= $args{screen};
-# 	my $size			= $args{size}			|| "screen";
-# 	my $cache			= $args{cache};
-# 	my $priority		= $args{priority};
+	# my $url				= $args{url}			|| $self->error("Missing url in screenshot_create");
+	# my $instance_id		= $args{instance_id};
+	# my $screen			= $args{screen};
+	# my $size			= $args{size}			|| "screen";
+	# my $cache			= $args{cache};
+	# my $priority		= $args{priority};
 
 	$self->error("Missing url in screenshot_create") 	if (! defined($args{url}));
 # 	$args{size} = "screen" 					if (! defined($args{size}));
@@ -401,7 +403,7 @@ Required. URL string to look for.
 
 sub screenshot_search {
 	my ($self, %args) 	= @_;
-	my $url			= $args{url}	|| $self->error("Missing id in screenshot_search");
+	my $url			= $args{url}	|| $self->error("Missing url in screenshot_search");
 
 	return $self->return_reply(action => 'screenshot/search', parameters => { %args });
 }
@@ -532,7 +534,13 @@ sub screenshot_thumbnail_file {
 	my ($self, %args) 	= @_;
 	my $file		= $args{file}	|| $self->error("Missing file in screenshot_thumbnail_file");
 
+	delete($args{file});
 	my $content = $self->screenshot_thumbnail(%args);
+
+	my $dir = dirname($file);
+	if (! -d $dir) {
+		make_path($dir)
+	}
 
 	if ($content ne '') {
 		open TARGET, "> $file" or $self->error("Cannot open $file for writing: $!");
@@ -688,8 +696,9 @@ Required. instance_id to use for all screenshots.
 sub batch_create {
 	my ($self, %args) 	= @_;
 	my $file		= $args{file}		|| $self->error("Missing file in batch_create");
-	my $instance_id		= $args{instance_id}	|| $self->error("Missing instance_id} in batch_create");
+	my $instance_id		= $args{instance_id}	|| $self->error("Missing instance_id in batch_create");
 
+	delete $args{file};
 	return $self->return_post_reply(action => 'batch/create', parameters => { %args }, file => $file);
 }
 
@@ -719,6 +728,65 @@ sub batch_info {
 }
 
 
+=head2 crawl_create()
+
+  $browshot->crawl_create(domain => 'blitapp.com', url => 'https://blitapp.com/', max => 50, instance_id => 65)
+
+Crawl a domain and screenshot all pages. See L<http://browshot.com/api/documentation#crawl_create> for the response format.
+
+Arguments:
+
+=over 4
+
+=item domain
+
+Required. Domain to crawl.
+
+=item url
+
+Required. URl to start with.
+
+=item instance_id
+
+Required. instance_id to use for all screenshots.
+
+=back
+
+=cut
+
+sub crawl_create {
+	my ($self, %args) = @_;
+	my $domain				= $args{domain}			|| $self->error("Missing domain in crawl_create");
+	my $url						= $args{url}				|| $self->error("Missing url in crawl_create");
+	my $instance_id		= $args{instance_id}	|| $self->error("Missing instance_id in crawl_create");
+
+	return $self->return_reply(action => 'crawl/create', parameters => { %args });
+}
+
+=head2 crawl__info()
+
+  $browshot->crawl__info(id => 5)
+
+Get information about a crawl_ requested previously. See L<http://browshot.com/api/documentation#crawl__info> for the response format.
+
+Arguments:
+
+=over 4
+
+=item id
+
+Required. Crawl ID.
+
+=back
+
+=cut
+
+sub crawl_info {
+	my ($self, %args) 	= @_;
+	my $id			= $args{id}	|| $self->error("Missing id in crawl_info");
+
+	return $self->return_reply(action => 'crawl/info', parameters => { %args });
+}
 
 =head2 account_info()
 
@@ -781,6 +849,7 @@ sub return_post_string {
 			  ]
 			);
 		};
+		$self->error($res->request->as_string) if ($@);
 		$self->error($@) if ($@);
 		$try++;
 	}
@@ -788,6 +857,8 @@ sub return_post_string {
 
 	if (! $res->is_success) {
 		$self->error("Server sent back an error: " . $res->code);
+		$self->info($res->request->as_string);
+		$self->info($res->as_string);
 	}
   
 	return $res->decoded_content;
@@ -889,6 +960,10 @@ sub generic_error {
 =head1 CHANGES
 
 =over 4
+
+=item 1.24.0
+
+C<screenshot_thumbnail_file> creates the directory structure as needed.
 
 =item 1.16.0
 
